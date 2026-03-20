@@ -877,5 +877,3 @@ class metacommunity():
         elif mode=='a': 
             df_species_distribution.to_csv(file_name, mode=mode, compression='gzip', header=False)
         return df_species_distribution
-
-################################################################ class individual #################################################################################################

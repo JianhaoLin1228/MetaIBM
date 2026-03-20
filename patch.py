@@ -506,5 +506,3 @@ class patch():
         
         values_array = values_array.reshape(self.hab_num, h_object.size)
         return values_array
-
-########################################## class metacommunity #############################################################

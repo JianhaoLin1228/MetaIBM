@@ -710,6 +710,4 @@ class habitat():
     def hab_clear_up_offspring_marker_and_immigrant_marker_pool(self):
         self.offspring_marker_pool = []
         self.immigrant_marker_pool = []
-    
-# ******************************************************************************************************************            
-############################################## class patch #################################################################
+
