@@ -2166,16 +2166,3 @@ class individual():
                 phenotype = np.mean(self.genotype_set[pheno_name]) + random.gauss(0, var)
                 self.phenotype_set[pheno_name] = phenotype
         return 0
-    
-
-    
-
-
-
-
-
-
-
-
-
-
