@@ -10,6 +10,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
+from .patch import patch
+
 
 class metacommunity():
     def __init__(self, metacommunity_name):

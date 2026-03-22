@@ -9,7 +9,7 @@ import random
 import math
 import copy
 
-from individual import individual
+from .individual import individual
 
 
 class habitat():

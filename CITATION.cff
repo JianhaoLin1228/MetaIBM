@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+title: "MetaIBM"
+message: "If you use MetaIBM in academic work, please cite it as follows."
+type: software
+authors:
+  - family-names: "Lin"
+    given-names: "Jianhao"
+version: "3.1.0"
+date-released: 2026-03-21
+abstract: "A Python package for individual-based metacommunity ecological and evolutionary modelling."
+license: "Academic and Non-Commercial Research License v1.0"
+keywords:
+  - metacommunity
+  - individual-based model
+  - agent-based model
+  - ecology
+  - evolution
+repository-code: "https://github.com/JianhaoLin1228/MetaIBM"
+url: "https://github.com/JianhaoLin1228/MetaIBM"

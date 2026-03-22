@@ -115,7 +115,7 @@ for a_piece_of_work in this_worker_job_para:
     environment_value = a_piece_of_work[4]
     print(f"Process {rank}, model.py is started (reproduce_mode={reproduce_mode}, mutation_rate={mutation_rate}, patch_dist_rate={patch_dist_rate}, environment_value={environment_value}, rep={rep})", flush=True)
     time.sleep(5+rank)
-    goal_path = mkdir_if_not_exist(rep, reproduce_mode, mutation_rate, patch_dist_rate, environment_value, root_path='/scratch/project_2018377/ljianhao/ATS_EcoEvo/0.0_1.0_0.1_100')
+    goal_path = mkdir_if_not_exist(rep, reproduce_mode, mutation_rate, patch_dist_rate, environment_value, root_path=None)
     if environment_value == 0.0: delta_mean_ls = [0.1]
     if environment_value == 1.0: delta_mean_ls = [-0.1]
     model.main(reproduce_mode, patch_dist_rate, mutation_rate, environment_value, delta_mean_ls, rep, goal_path)

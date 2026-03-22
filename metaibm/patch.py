@@ -9,7 +9,7 @@ import random
 import copy
 import re
 
-from habitat import habitat
+from .habitat import habitat
 
 
 class patch():
