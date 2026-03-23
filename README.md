@@ -35,6 +35,7 @@ MetaIBM/
 │   ├── bootstrap_metaibm.py
 │   ├── model.py
 │   └── mpi_running.py
+├── test/
 ├── docs/
 │   └── MetaIBM users manual.docx
 └── README.md
@@ -65,6 +66,9 @@ Runnable experiment scripts.
 Documentation resources.
 
 - `MetaIBM users manual.docx` — detailed user manual covering package concepts, ecological processes, data structures, simulation workflow, output, and HPC usage.
+
+#### `test/`
+Runnable scripts for testing the fixed bug acompanying each updated code in the core package - metaibm.
 
 ---
 
