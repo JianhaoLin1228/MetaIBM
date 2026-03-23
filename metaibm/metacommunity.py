@@ -270,7 +270,7 @@ class metacommunity():
 #******************************** changing environmental values at metacommunity scales ************************** #    
     def meta_offset_environmental_values(self, env_name_ls, delta_mean_ls, delta_var_ls=None):
         ''' multi mean (var) values of env_name in habitats + or - delta_mean_ls (delta_var_ls) across the metacommunity (Input: list) '''
-        if delta_var_ls == None: delta_mean_ls = [0 for i in range(len(env_name_ls))]
+        if delta_var_ls == None: delta_var_ls = [0 for i in range(len(env_name_ls))]
         for patch_id, patch_object in self.set.items():
             patch_object.patch_offset_environmental_values(env_name_ls, delta_mean_ls, delta_var_ls)
             
