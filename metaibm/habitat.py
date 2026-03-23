@@ -60,7 +60,7 @@ class habitat():
             microsite_e_values = np.random.normal(loc=0, scale=var_e_index, size=(self.length, self.width)) + mean_e_index
             self.set[name_e_index] = microsite_e_values
 
-        microsite_individuals = [[None for i in range(self.length)] for i in range(self.width)]
+        microsite_individuals = self._empty_microsite_grid()
         self.set['microsite_individuals'] = microsite_individuals
         
     def __str__(self):
@@ -95,6 +95,10 @@ class habitat():
         return 0
     
 #****************************************************************************************
+    def _empty_microsite_grid(self):        
+        """Return an empty microsite grid with shape [length][width]."""        
+        return [[None for _ in range(self.width)] for _ in range(self.length)]
+
     def add_individual(self, indi_object, len_id, wid_id):
         if self.set['microsite_individuals'][len_id][wid_id] != None:
             print('the microsite in the habitat is occupied.')
@@ -124,7 +128,7 @@ class habitat():
             self.species_category[indi_object.species_id][indi_object.gender].remove((len_id, wid_id))    
     
     def habitat_disturbance_process(self):
-        microsite_individuals = [[None for i in range(self.length)] for i in range(self.width)]
+        microsite_individuals = self._empty_microsite_grid()
         self.set['microsite_individuals'] = microsite_individuals
         self.empty_site_pos_ls = [(i, j) for i in range(self.length) for j in range(self.width)]
         self.occupied_site_pos_ls = []
