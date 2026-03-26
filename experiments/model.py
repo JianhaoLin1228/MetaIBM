@@ -13,9 +13,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 
-import metacommunity_IBM as metaIBM
-from metacommunity_IBM import patch
-from metacommunity_IBM import metacommunity
+import bootstrap_metaibm as _bootstrap
+import metaibm
+from metaibm.individual import individual
+from metaibm.habitat import habitat
+from metaibm.patch import patch
+from metaibm.metacommunity import metacommunity
 
 ######################################### def simulation() #########################################
 def generating_empty_metacommunity(meta_name, patch_num, patch_location_ls, hab_num, hab_length, hab_width, dormancy_pool_max_size, 
