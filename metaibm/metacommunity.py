@@ -15,13 +15,13 @@ from .patch import patch
 
 class metacommunity():
     def __init__(self, metacommunity_name):
-        self.set = {}                       # self.data_set={} # to be improved
+        self.set = {}                                       # self.data_set={} # to be improved
         self.patch_num = 0
         #self.meta_map = nx.Graph()
         self.metacommunity_name = metacommunity_name
-        self.patch_id_ls = []
-        self.patch_id_2_index_dir = {}
-        self.disp_current_matrix = np.matrix([])
+        self.patch_id_ls = []                               # patch_id_ls is currently assumed to be aligned with patch.index. (in order)
+        self.patch_id_2_index_dir = {}                      # Maps patch_id -> patch.index.
+        self.pairwise_patch_distance_matrix = np.matrix([]) # Matrix row/column i is defined by patch.index == i, not by insertion order alone.
 
     def get_data(self):
         output = {}
@@ -31,15 +31,27 @@ class metacommunity():
     
     def __str__(self):
         return str(self.get_data())
-        
+    
+    def update_disp_current_matrix(self):
+        dist_matrix = np.zeros((self.patch_num, self.patch_num), dtype=float)
+        for patch_i_id, patch_i_obj in self.set.items():        
+            xi, yi = patch_i_obj.location        
+            i = patch_i_obj.index
+            for patch_j_id, patch_j_obj in self.set.items():            
+                xj, yj = patch_j_obj.location            
+                j = patch_j_obj.index            
+                dist_matrix[i, j] = np.sqrt((xi - xj)**2 + (yi - yj)**2)  # This matrix is allocated by patch_num, but filled using patch.index. 
+        self.pairwise_patch_distance_matrix = np.matrix(dist_matrix)
+        return self.pairwise_patch_distance_matrix
+
     def add_patch(self, patch_name, patch_object):
-        ''' add new patch to the metacommunity. '''
+        ''' add new patch to the metacommunity in order of their patch.index, 0, 1, 2, ...., N '''
         self.set[patch_name] = patch_object
         self.patch_num += 1
         #self.meta_map.add_node(patch_name)
-        self.patch_id_ls.append(patch_name)
-        self.patch_id_2_index_dir[patch_name] = patch_object.index
-        self.disp_current_matrix = np.matrix(np.zeros((self.patch_num, self.patch_num)))
+        self.patch_id_ls.append(patch_name)                              # add patch in order of their patch.index, 0, 1, 2, ...., N
+        self.patch_id_2_index_dir[patch_name] = patch_object.index       # add patch in order of their patch.index, 0, 1, 2, ...., N
+        self.update_disp_current_matrix()                                # If a patch with a larger index is added too early, this can raise IndexError.
         
     def reshape_habitat_data_in_patch(self, df, hab_num_x_axis_in_patch, hab_num_y_axis_in_patch, hab_y_len, hab_x_len, mask_loc=None):
         ''' reshape habitat_data in the a coorderation order for plotting'''
@@ -461,10 +473,58 @@ class metacommunity():
                     integer = 0
                 matrix[i, j] = integer
         return matrix
-        
-    def get_disp_amomg_rate_matrix(self, total_disp_among_rate):
+
+    def dispersal_kernel_strength(self, d_ij, method='uniform', **kwargs):
+        ''' Input: d_ij (Euclidean distance between patch_i and patch_j); method == 'uniform', 'guassian', 'exponential', 'cauchy', or 'power_law'
+        Method-specific parameters: **kwargs = {'sigma': sigma, 'rho': rho, 'gamma': gamma, 'alpha': alpha, 'r0': r0}
+            no parameter for 'uniform'; sigma for 'gaussian'; rho for 'exponential'; gamma for 'cauchy'; alpha & r0 for 'power_law' 
+        Return: the relative strength of dispersal between patch_i to patch_j (i!=j) '''
+        if method == 'uniform': 
+            D_ij = 1.0
+
+        elif method == 'gaussian':        # short-tail
+            sigma = kwargs.get('sigma')
+            D_ij = np.exp(-(d_ij ** 2) / (2.0 * sigma ** 2))
+
+        elif method == 'exponential':     # short-tail
+            rho = kwargs.get('rho')
+            D_ij = rho * np.exp(-rho * d_ij)
+
+        elif method == 'cauchy':          # long-tail
+            gamma = kwargs.get('gamma')
+            D_ij =  1.0 / (1.0 + (d_ij / gamma) ** 2)
+
+        elif method == 'power_law':       # long-tail
+            alpha = kwargs.get('alpha')        
+            r0 = kwargs.get('r0')
+            D_ij =  (1.0 + d_ij / r0) ** (-alpha)
+
+        else: raise ValueError(f"Unsupported dispersal kernel method: {method}")
+        return D_ij
+    
+    def calculate_dispersal_kernel_strength_matrix(self, method='uniform', **kwargs):
+        ''' Return: the unnormalized dispersal kernel strength matrix D = [D_ij]'''
+        if self.patch_num == 1: return np.matrix([[0.0]])
+
+        D = np.matrix(np.zeros((self.patch_num, self.patch_num), dtype=float))
+
+        for i in range(self.patch_num):
+            for j in range(self.patch_num):
+                if i==j: D[i, j] = 0
+                else:
+                    d_ij = self.pairwise_patch_distance_matrix[i, j]
+                    D[i, j] = self.dispersal_kernel_strength(d_ij, method=method, **kwargs)
+        return D              # unnormalized dispersal strength matrix
+    
+    def normalized_calculate_dispersal_kernel_strength_matrix(self, method='uniform', **kwargs):
+        D = self.calculate_dispersal_kernel_strength_matrix(method=method, **kwargs)
+        normalized_D = D/D.sum(axis=1)
+        return normalized_D   # normalized dispersal strength matrix
+
+    def get_disp_among_rate_matrix(self, total_disp_among_rate, method='uniform', **kwargs):
         ''' the element p_i_j is the propability that emigrants would disperse from patch_i to patch_j '''
-        disp_amomg_matrix = np.matrix(np.ones((self.patch_num, self.patch_num))) * total_disp_among_rate/(self.patch_num-1)
+        normalized_D = self.normalized_calculate_dispersal_kernel_strength_matrix(method=method, **kwargs)
+        disp_amomg_matrix = total_disp_among_rate * normalized_D
         disp_amomg_matrix[np.diag_indices_from(disp_amomg_matrix)] = 1- total_disp_among_rate  # elements in diagonal_line = 1-m
         return disp_amomg_matrix
     
@@ -505,27 +565,28 @@ class metacommunity():
             patch_empty_sites_num_matrix[patch_object.index, patch_object.index] = patch_empty_sites_num
         return patch_empty_sites_num_matrix
     
-    def get_emigrants_matrix(self, total_disp_among_rate):
+    def get_emigrants_matrix(self, total_disp_among_rate, method='uniform', **kwargs):
         ''' the element em_i_j is the expectation of emigrants_num disperse from patch_i to patch_j '''
-        return (self.get_offspring_pool_num_matrix() + self.get_dormance_pool_num_matrix()) * self.get_disp_amomg_rate_matrix(total_disp_among_rate)
+        return (self.get_offspring_pool_num_matrix() + self.get_dormance_pool_num_matrix()) * self.get_disp_among_rate_matrix(total_disp_among_rate, method=method, **kwargs)
 
-    def get_immigrants_matrix(self, total_disp_among_rate):
-        emigrants_matrix = self.get_emigrants_matrix(total_disp_among_rate)
+    def get_immigrants_matrix(self, total_disp_among_rate, method='uniform', **kwargs):
+        ''' Return: a matrix about how to alloacte empty microsites to each patch (including itself). '''
+        emigrants_matrix = self.get_emigrants_matrix(total_disp_among_rate, method=method, **kwargs)
         patch_empty_sites_num_matrix = self.get_patch_empty_sites_num_matrix()
         return (emigrants_matrix/emigrants_matrix.sum(axis=0))*patch_empty_sites_num_matrix
     
-    def get_dispersal_among_num_matrix(self, total_disp_among_rate):
-        immigrants_matrix = self.get_immigrants_matrix(total_disp_among_rate)
-        emigrants_matrix = self.get_emigrants_matrix(total_disp_among_rate)
+    def get_dispersal_among_num_matrix(self, total_disp_among_rate, method='uniform', **kwargs):
+        immigrants_matrix = self.get_immigrants_matrix(total_disp_among_rate, method=method, **kwargs)
+        emigrants_matrix = self.get_emigrants_matrix(total_disp_among_rate, method=method, **kwargs)
         return self.matrix_around(np.minimum(emigrants_matrix, immigrants_matrix))
 
-    def dispersal_among_patches_from_offspring_pool_and_dormancy_pool(self, total_disp_among_rate):
-        ''' dispersal from patch_i to patch_j '''
+    def dispersal_among_patches_from_offspring_pool_and_dormancy_pool(self, total_disp_among_rate, method='uniform', **kwargs):
+        ''' dispersal from patch_i to patch_j (directly into the microsites) '''
         if self.patch_num < 2:
             log_info = '[Dispersal among patches] in %s: patch_num < 2, there are 0 individuals disperse among patches \n'
             #print(log_info)
             return log_info
-        dispersal_among_num_matrix = self.get_dispersal_among_num_matrix(total_disp_among_rate)
+        dispersal_among_num_matrix = self.get_dispersal_among_num_matrix(total_disp_among_rate, method=method, **kwargs)
         counter = 0
         for j in range(self.patch_num):
             patch_j_id = self.patch_id_ls[j]
@@ -554,13 +615,13 @@ class metacommunity():
         #print(log_info)
         return log_info
     
-    def dispersal_aomng_patches_from_offspring_pool_to_immigrant_pool(self, total_disp_among_rate):
+    def dispersal_aomng_patches_from_offspring_pool_to_immigrant_pool(self, total_disp_among_rate, method='uniform', **kwargs):
         ''' exchange between offspring pools among patches into immigrant pool'''
         if self.patch_num < 2:
             log_info = '[Dispersal among patches] in %s: patch_num < 2, there are 0 individuals disperse into habs_immigrant_pool among patches \n'
             #print(log_info)
             return log_info
-        offspring_dispersal_matrix = self.matrix_around(self.get_offspring_pool_num_matrix()*self.get_disp_amomg_rate_matrix(total_disp_among_rate))
+        offspring_dispersal_matrix = self.matrix_around(self.get_offspring_pool_num_matrix()*self.get_disp_among_rate_matrix(total_disp_among_rate, method=method, **kwargs))
         counter = 0
         for j in range(self.patch_num):
             patch_j_id = self.patch_id_ls[j]
@@ -584,14 +645,14 @@ class metacommunity():
         #print(log_info)
         return log_info
     
-    def dispersal_aomng_patches_from_offspring_marker_pool_to_immigrant_marker_pool(self, total_disp_among_rate):
+    def dispersal_aomng_patches_from_offspring_marker_pool_to_immigrant_marker_pool(self, total_disp_among_rate, method='uniform', **kwargs):
         ''' exchange between offspring marker pools among patches into immigrant marker pool '''
         if self.patch_num < 2:
             log_info = '[Dispersal among patches] in %s: patch_num < 2, there are 0 individuals disperse into habs_immigrant_marker_pool among patches \n'
             #print(log_info)
             return log_info
         
-        offspring_marker_dispersal_matrix = self.matrix_around(self.get_offspring_marker_pool_num_matrix()*self.get_disp_amomg_rate_matrix(total_disp_among_rate))
+        offspring_marker_dispersal_matrix = self.matrix_around(self.get_offspring_marker_pool_num_matrix()*self.get_disp_among_rate_matrix(total_disp_among_rate, method=method, **kwargs))
         counter = 0
         for j in range(self.patch_num):
             patch_j_id = self.patch_id_ls[j]
@@ -615,13 +676,13 @@ class metacommunity():
         #print(log_info)
         return log_info
 
-    def dispersal_among_patches_from_offsrping_pool_and_dormancy_pool_to_immigrant_pool(self, total_disp_among_rate):
+    def dispersal_among_patches_from_offsrping_pool_and_dormancy_pool_to_immigrant_pool(self, total_disp_among_rate, method='uniform', **kwargs):
         ''' exchange between offspring pools and dormancy among patches into immigrant pool'''
         if self.patch_num < 2:
             log_info = '[Dispersal among patches] in %s: patch_num < 2, there are 0 individuals disperse into habs_immigrant_pool among patches \n'
             #print(log_info)
             return log_info
-        offspring_dormancy_dispersal_matrix = self.matrix_around(self.get_emigrants_matrix(total_disp_among_rate))
+        offspring_dormancy_dispersal_matrix = self.matrix_around(self.get_emigrants_matrix(total_disp_among_rate, method=method, **kwargs))
         counter = 0
         for j in range(self.patch_num):
             patch_j_id = self.patch_id_ls[j]
