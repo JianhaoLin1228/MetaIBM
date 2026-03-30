@@ -15,13 +15,13 @@ from .patch import patch
 
 class metacommunity():
     def __init__(self, metacommunity_name):
-        self.set = {}                       # self.data_set={} # to be improved
+        self.set = {}                                       # self.data_set={} # to be improved
         self.patch_num = 0
         #self.meta_map = nx.Graph()
         self.metacommunity_name = metacommunity_name
-        self.patch_id_ls = []
-        self.patch_id_2_index_dir = {}
-        self.pairwise_patch_distance_matrix = np.matrix([])
+        self.patch_id_ls = []                               # patch_id_ls is currently assumed to be aligned with patch.index. (in order)
+        self.patch_id_2_index_dir = {}                      # Maps patch_id -> patch.index.
+        self.pairwise_patch_distance_matrix = np.matrix([]) # Matrix row/column i is defined by patch.index == i, not by insertion order alone.
 
     def get_data(self):
         output = {}
@@ -40,18 +40,18 @@ class metacommunity():
             for patch_j_id, patch_j_obj in self.set.items():            
                 xj, yj = patch_j_obj.location            
                 j = patch_j_obj.index            
-                dist_matrix[i, j] = np.sqrt((xi - xj)**2 + (yi - yj)**2)
+                dist_matrix[i, j] = np.sqrt((xi - xj)**2 + (yi - yj)**2)  # This matrix is allocated by patch_num, but filled using patch.index. 
         self.pairwise_patch_distance_matrix = np.matrix(dist_matrix)
         return self.pairwise_patch_distance_matrix
 
     def add_patch(self, patch_name, patch_object):
-        ''' add new patch to the metacommunity. '''
+        ''' add new patch to the metacommunity in order of their patch.index, 0, 1, 2, ...., N '''
         self.set[patch_name] = patch_object
         self.patch_num += 1
         #self.meta_map.add_node(patch_name)
-        self.patch_id_ls.append(patch_name)
-        self.patch_id_2_index_dir[patch_name] = patch_object.index
-        self.update_disp_current_matrix()
+        self.patch_id_ls.append(patch_name)                              # add patch in order of their patch.index, 0, 1, 2, ...., N
+        self.patch_id_2_index_dir[patch_name] = patch_object.index       # add patch in order of their patch.index, 0, 1, 2, ...., N
+        self.update_disp_current_matrix()                                # If a patch with a larger index is added too early, this can raise IndexError.
         
     def reshape_habitat_data_in_patch(self, df, hab_num_x_axis_in_patch, hab_num_y_axis_in_patch, hab_y_len, hab_x_len, mask_loc=None):
         ''' reshape habitat_data in the a coorderation order for plotting'''
