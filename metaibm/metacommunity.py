@@ -514,12 +514,12 @@ class metacommunity():
                 else:
                     d_ij = self.pairwise_patch_distance_matrix[i, j]
                     D[i, j] = self.dispersal_kernel_strength(d_ij, method=method, **kwargs)
-        return D
+        return D              # unnormalized dispersal strength matrix
     
     def normalized_calculate_dispersal_kernel_strength_matrix(self, method='uniform', **kwargs):
         D = self.calculate_dispersal_kernel_strength_matrix(method=method, **kwargs)
         normalized_D = D/D.sum(axis=1)
-        return normalized_D
+        return normalized_D   # normalized dispersal strength matrix
 
     def get_disp_among_rate_matrix(self, total_disp_among_rate, method='uniform', **kwargs):
         ''' the element p_i_j is the propability that emigrants would disperse from patch_i to patch_j '''
@@ -581,7 +581,7 @@ class metacommunity():
         return self.matrix_around(np.minimum(emigrants_matrix, immigrants_matrix))
 
     def dispersal_among_patches_from_offspring_pool_and_dormancy_pool(self, total_disp_among_rate, method='uniform', **kwargs):
-        ''' dispersal from patch_i to patch_j '''
+        ''' dispersal from patch_i to patch_j (directly into the microsites) '''
         if self.patch_num < 2:
             log_info = '[Dispersal among patches] in %s: patch_num < 2, there are 0 individuals disperse among patches \n'
             #print(log_info)
