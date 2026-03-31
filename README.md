@@ -36,6 +36,9 @@ MetaIBM/
 │   ├── model.py
 │   └── mpi_running.py
 ├── test/
+├── extention/
+│   ├── __init__.py
+│   ├── __init__.py
 ├── docs/
 │   └── MetaIBM users manual.docx
 └── README.md
@@ -68,7 +71,14 @@ Documentation resources.
 - `MetaIBM users manual.docx` — detailed user manual covering package concepts, ecological processes, data structures, simulation workflow, output, and HPC usage.
 
 #### `test/`
+
 Runnable scripts for testing the fixed bug acompanying each updated code in the core package - metaibm.
+
+#### `extension/`
+
+Intended for modular add-on features that can be mounted onto the core package when needed by users, enabling flexible project growth without overloading the core codebase.
+
+
 
 ---
 
@@ -270,13 +280,9 @@ The user manual documents:
 
 MetaIBM **v3.2.0** introduces dispersal-kernel, including uniform distribution (by default), gaussian distribution (sigma), exponential distribution (rho), cauchy distribution, power_law distribution, updates metacommunity-level logic in dispersal among patches (the old code still works) and adds dedicated experiment and test scripts for improved validation and future development.
 
-
-
 **MetaIBM v3.1.0**
 
 MetaIBM **v3.1.0** adopts a package-oriented structure centered on the `metaibm` package and a lightweight bootstrap module for running experiment scripts from the `experiments/` directory. This README describes the package-oriented layout using `metaibm/` as the core library and `bootstrap_metaibm.py` as the preferred path initialization helper for experiment scripts. 
-
-
 
 ---
 
