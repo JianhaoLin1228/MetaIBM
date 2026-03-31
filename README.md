@@ -1,4 +1,4 @@
-# MetaIBM v3.1.0
+# MetaIBM v3.2.0
 
 **MetaIBM** is a Python-based individual-based / agent-based modelling package for simulating **metacommunity ecological and evolutionary dynamics** across multiple spatial scales. The package organizes the model into four core abstractions:
 
@@ -7,11 +7,11 @@
 - `patch` — a collection of habitats
 - `metacommunity` — a collection of patches
 
-Version **v3.1.0** adopts a package-oriented structure centered on the `metaibm` package and a lightweight bootstrap module for running experiment scripts from the `experiments/` directory.
+MetaIBM adopts a package-oriented structure centered on the `metaibm` package and a lightweight bootstrap module for running experiment scripts from the `experiments/` directory.
 
 ---
 
-## Highlights in v3.1.0
+## Highlights in v3.2.0
 
 - **Package-oriented layout** with core code in `metaibm/`
 - **Explicit package exports** through `metaibm/__init__.py`
@@ -116,7 +116,7 @@ conda activate metaibm
 
 ---
 
-## How imports work in v3.1.0
+## How imports work in v3.2.0
 
 When running scripts inside `experiments/`, the package import path is initialized by:
 
@@ -233,7 +233,7 @@ The default single-run workflow in `model.py` writes:
 
 ## Recommended import style for future development
 
-For all new code in v3.1.0 and later, prefer direct package imports:
+For all new code in v3.2.0 and later, prefer direct package imports:
 
 ```python
 import bootstrap_metaibm as _bootstrap
@@ -264,17 +264,25 @@ The user manual documents:
 
 ---
 
-## Version
+## List of Versions History
+
+**MetaIBM v3.2.0**
+
+MetaIBM **v3.2.0** introduces dispersal-kernel, including uniform distribution (by default), gaussian distribution (sigma), exponential distribution (rho), cauchy distribution, power_law distribution, updates metacommunity-level logic in dispersal among patches (the old code still works) and adds dedicated experiment and test scripts for improved validation and future development.
+
+
 
 **MetaIBM v3.1.0**
 
-This README describes the package-oriented layout using `metaibm/` as the core library and `bootstrap_metaibm.py` as the preferred path initialization helper for experiment scripts.
+MetaIBM **v3.1.0** adopts a package-oriented structure centered on the `metaibm` package and a lightweight bootstrap module for running experiment scripts from the `experiments/` directory. This README describes the package-oriented layout using `metaibm/` as the core library and `bootstrap_metaibm.py` as the preferred path initialization helper for experiment scripts. 
+
+
 
 ---
 
 ## License
 
-MetaIBM v3.1.0 is distributed under a **source-available academic and non-commercial research license**.
+MetaIBM v3.2.0 is distributed under a **source-available academic and non-commercial research license**.
 
 - **Free** for academic, educational, and non-commercial research use
 - **Paid commercial license required** for any commercial or for-profit use
