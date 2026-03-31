@@ -21,11 +21,7 @@ class metacommunity():
         self.metacommunity_name = metacommunity_name
         self.patch_id_ls = []                               # patch_id_ls is currently assumed to be aligned with patch.index. (in order) 0, 1, 2, ...., N
         self.patch_id_2_index_dir = {}                      # Maps patch_id -> patch.index.
-        self.pairwise_patch_distance_matrix = np.matrix([]) # Matrix row/column i is defined by patch.index == i, not by insertion order alone.
-
-        self.global_habitat_id_ls =[]                                  # element: (patch_id, habitat_id) 
-        self.global_habitat_id_2_index_dir={}                          # {(patch_id, habitat_id): global_habitat_index}; row/col index for global_habitat_distance_matrix
-        self.global_habitat_distance_matrix = np.matrix([])            # element: distance between pairwise habitats at metacommunity scales
+        self.pairwise_patch_distance_matrix = np.matrix([]) # Full-connected Network: Matrix row/column i is defined by patch.index == i, not by insertion order alone.
 
     def get_data(self):
         output = {}
@@ -36,12 +32,6 @@ class metacommunity():
     def __str__(self):
         return str(self.get_data())
     
-    def update_global_habitat_distance_matrix(self):
-        pass
-
-    def incremental_update_global_habitat_distance_matrix(self): 
-        pass
-
     def update_disp_current_matrix(self):
         dist_matrix = np.zeros((self.patch_num, self.patch_num), dtype=float)
         for patch_i_id, patch_i_obj in self.set.items():        
@@ -63,6 +53,10 @@ class metacommunity():
         self.patch_id_2_index_dir[patch_name] = patch_object.index       # add patch in order of their patch.index, 0, 1, 2, ...., N
         self.update_disp_current_matrix()                                # If a patch with a larger index is added too early, this can raise IndexError.
         
+        self.global_habitat_id_idx_registry(patch_object)                # global_habitat index in a ls, index for habitat-network matrix
+        self.update_global_habitat_distance_matrix()                     # calculate global habitats distance matrix
+        #self.incremental_update_global_habitat_distance_matrix()
+
     def reshape_habitat_data_in_patch(self, df, hab_num_x_axis_in_patch, hab_num_y_axis_in_patch, hab_y_len, hab_x_len, mask_loc=None):
         ''' reshape habitat_data in the a coorderation order for plotting'''
         reshape_data_col_row = np.empty((hab_y_len*hab_num_y_axis_in_patch+hab_num_y_axis_in_patch-1, 0))
@@ -716,51 +710,6 @@ class metacommunity():
         #print(log_info)
         return log_info
 
-#******************************************* dispersal among patches in global habitat network *****************************
-    def get_global_habitat_network_dormancy_pool_num_matrix(self):
-        pass
-
-    def get_global_habitat_network_offspring_pool_num_matrix(self):
-        pass
-
-    def get_global_habitat_network_offspring_marker_pool_num_matrix(self):
-        pass
-
-    def get_global_habitat_network_emigrants_matrix(self):
-        pass
-
-    def get_global_habitat_network_immigrants_matrix(self):
-        pass
-    
-
-
-
-    def calculate_global_habitat_network_dispersal_kernel_strength_matrix(self):
-        pass
-
-    def normalized_calculate_global_habitat_network_dispersal_kernel_strength_matrix(self):
-        pass
-
-    def global_habitat_dispersal_among_rate_matrix(self):
-        pass
-
-    def dispersal_among_patches_in_global_habitat_network_from_offspring_pool_to_immigrant_pool(self):
-        pass
-
-    def dispersal_among_patches_in_global_habitat_network_from_offspring_marker_pool_to_immigrant_marker_pool(self):
-        pass
-
-
-
-
-
-
-
-
-
-
-
-            
 #******************************************* dispersal within patch process ************************************************
     def meta_dispersal_within_patch_from_offspring_marker_to_immigrant_marker_pool(self, disp_within_rate):
         ''' random dispersal within patch, offspring marker is the denotion of an dispering offspring to be born '''
@@ -995,3 +944,8 @@ class metacommunity():
         elif mode=='a': 
             df_species_distribution.to_csv(file_name, mode=mode, compression='gzip', header=False)
         return df_species_distribution
+
+
+#******************************* install extension module
+from extension.global_habitat_network import install_global_habitat_network_methods
+install_global_habitat_network_methods(metacommunity)
