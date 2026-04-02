@@ -34,11 +34,12 @@ MetaIBM/
 ├── experiments/
 │   ├── bootstrap_metaibm.py
 │   ├── model.py
+│   ├── model-sloss.py
 │   └── mpi_running.py
 ├── test/
 ├── extention/
 │   ├── __init__.py
-│   ├── __init__.py
+│   ├── global_habitat_network.py
 ├── docs/
 │   └── MetaIBM users manual.docx
 └── README.md
@@ -77,8 +78,6 @@ Runnable scripts for testing the fixed bug acompanying each updated code in the 
 #### `extension/`
 
 Intended for modular add-on features that can be mounted onto the core package when needed by users, enabling flexible project growth without overloading the core codebase.
-
-
 
 ---
 
