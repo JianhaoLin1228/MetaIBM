@@ -19,9 +19,9 @@ class metacommunity():
         self.patch_num = 0
         #self.meta_map = nx.Graph()
         self.metacommunity_name = metacommunity_name
-        self.patch_id_ls = []                               # patch_id_ls is currently assumed to be aligned with patch.index. (in order)
+        self.patch_id_ls = []                               # patch_id_ls is currently assumed to be aligned with patch.index. (in order) 0, 1, 2, ...., N
         self.patch_id_2_index_dir = {}                      # Maps patch_id -> patch.index.
-        self.pairwise_patch_distance_matrix = np.matrix([]) # Matrix row/column i is defined by patch.index == i, not by insertion order alone.
+        self.pairwise_patch_distance_matrix = np.matrix([]) # Full-connected Network: Matrix row/column i is defined by patch.index == i, not by insertion order alone.
 
     def get_data(self):
         output = {}
@@ -53,6 +53,10 @@ class metacommunity():
         self.patch_id_2_index_dir[patch_name] = patch_object.index       # add patch in order of their patch.index, 0, 1, 2, ...., N
         self.update_disp_current_matrix()                                # If a patch with a larger index is added too early, this can raise IndexError.
         
+        self.global_habitat_id_idx_registry(patch_object)                # global_habitat index in a ls, index for habitat-network matrix
+        self.update_global_habitat_distance_matrix()                     # calculate global habitats distance matrix
+        #self.incremental_update_global_habitat_distance_matrix()
+
     def reshape_habitat_data_in_patch(self, df, hab_num_x_axis_in_patch, hab_num_y_axis_in_patch, hab_y_len, hab_x_len, mask_loc=None):
         ''' reshape habitat_data in the a coorderation order for plotting'''
         reshape_data_col_row = np.empty((hab_y_len*hab_num_y_axis_in_patch+hab_num_y_axis_in_patch-1, 0))
@@ -704,8 +708,8 @@ class metacommunity():
             counter += len(migrants_to_j_indi_object_ls)
         log_info = '%s: there are %d individuals disperse into habs_immigrant_pool among patches; there are %d individuals in the immigrant pools in the metacommunity \n'%(self.metacommunity_name, counter, self.meta_immigrant_pool_individual_num())
         #print(log_info)
-        return log_info    
-            
+        return log_info
+
 #******************************************* dispersal within patch process ************************************************
     def meta_dispersal_within_patch_from_offspring_marker_to_immigrant_marker_pool(self, disp_within_rate):
         ''' random dispersal within patch, offspring marker is the denotion of an dispering offspring to be born '''
@@ -940,3 +944,8 @@ class metacommunity():
         elif mode=='a': 
             df_species_distribution.to_csv(file_name, mode=mode, compression='gzip', header=False)
         return df_species_distribution
+
+
+#******************************* install extension module
+from extension.global_habitat_network import install_global_habitat_network_methods
+install_global_habitat_network_methods(metacommunity)
