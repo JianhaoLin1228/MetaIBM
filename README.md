@@ -1,4 +1,4 @@
-# MetaIBM v3.2.0
+# MetaIBM v3.3.0
 
 **MetaIBM** is a Python-based individual-based / agent-based modelling package for simulating **metacommunity ecological and evolutionary dynamics** across multiple spatial scales. The package organizes the model into four core abstractions:
 
@@ -10,6 +10,18 @@
 MetaIBM adopts a package-oriented structure centered on the `metaibm` package and a lightweight bootstrap module for running experiment scripts from the `experiments/` directory.
 
 ---
+
+## Highlights in v3.3.0
+
+- **global-habitat-network workflow** for habitat-level dispersal across the whole landscape
+
+- **extension-based implementation** through `extension/global_habitat_network.py`
+
+- **metacommunity integration** by installing extension methods into `metaibm/metacommunity.py`
+
+- continued support for kernel-based dispersal methods, with the global habitat network designed to work with `uniform`, `gaussian`, `exponential`, `cauchy`, and `power_law` dispersal kernels
+
+# 
 
 ## Highlights in v3.2.0
 
@@ -125,7 +137,7 @@ conda activate metaibm
 
 ---
 
-## How imports work in v3.2.0
+## How imports work in v3.3.0
 
 When running scripts inside `experiments/`, the package import path is initialized by:
 
@@ -242,7 +254,7 @@ The default single-run workflow in `model.py` writes:
 
 ## Recommended import style for future development
 
-For all new code in v3.2.0 and later, prefer direct package imports:
+For all new code in v3.3.0 and later, prefer direct package imports:
 
 ```python
 import bootstrap_metaibm as _bootstrap
@@ -274,6 +286,9 @@ The user manual documents:
 ---
 
 ## List of Versions History
+
+**MetaIBM v3.3.0**  
+MetaIBM **v3.3.0** introduces the **global-habitat-network** extension for habitat-level dispersal across the whole landscape, adds the dedicated extension module `extension/global_habitat_network.py`, and supports extension installation into `metaibm/metacommunity.py` through `install_global_habitat_network_methods(metacommunity)`. This version continues the extension-oriented and package-based development direction of MetaIBM.
 
 **MetaIBM v3.2.0**
 
