@@ -168,6 +168,7 @@ def dispersal_among_patches_in_global_habitat_network_from_offspring_marker_pool
     if self.patch_num < 2:
         log_info = '[Dispersal among patches in global habitat network] in %s: patch_num < 2, there are 0 offspring markers disperse into immigrant_marker_pool among habitats \n' % self.metacommunity_name
         return log_info
+    
     global_hab_net_offspring_marker_dispersal_matrix = self.matrix_around(self.get_global_habitat_network_offspring_marker_pool_num_matrix() * self.global_habitat_dispersal_among_rate_matrix(total_disp_among_rate, method=method, **kwargs))
     counter = 0
     for j, (patch_j_id, h_j_id) in enumerate(self.global_habitat_id_ls):
@@ -185,7 +186,10 @@ def dispersal_among_patches_in_global_habitat_network_from_offspring_marker_pool
         random.shuffle(migrants_to_j_offspring_marker_ls)
         h_j_object.immigrant_marker_pool += migrants_to_j_offspring_marker_ls
         counter += len(migrants_to_j_offspring_marker_ls)
-
+    
+    #log_info1 = np.array2string(np.array(self.global_habitat_id_ls), threshold=np.inf, max_line_width=1000, precision=10, suppress_small=True) + '\n'
+    #log_info2 = np.array2string(self.global_habitat_dispersal_among_rate_matrix(total_disp_among_rate, method=method, **kwargs), threshold=np.inf, max_line_width=1000, precision=10, suppress_small=True) + '\n'
+    #log_info3 = np.array2string(global_hab_net_offspring_marker_dispersal_matrix, threshold=np.inf, max_line_width=1000, precision=10, suppress_small=True) + '\n'
     log_info = '[Dispersal among patches in global habitat network] in %s: there are %d offspring markers disperse into immigrant_marker_pool among patches in global-habitat-network; there are %d offspring markers in the immigrant_marker_pools in the metacommunity \n' % (self.metacommunity_name, counter, self.meta_immigrant_marker_pool_marker_num())
     return log_info
 
