@@ -169,7 +169,7 @@ def main(rep, patch_num, is_same_heterogeneity, reproduce_mode, total_disp_among
     #rep = 0
     
     ''' time-step scales parameters '''
-    all_time_step = 1
+    all_time_step = 5000
     
     ''' map size parameters '''
     #patch_num = 16  # 1, 4, 16, 64, 256, 1024
@@ -356,4 +356,4 @@ def main(rep, patch_num, is_same_heterogeneity, reproduce_mode, total_disp_among
 
 ##############################################################################################################################################################################
 if __name__ == '__main__':
-    main(rep=0, patch_num=256, is_same_heterogeneity=False, reproduce_mode='asexual', total_disp_among_rate=0.1, disp_within_rate=0.1, patch_dist_rate=0.00001, goal_path=None)
+    main(rep=0, patch_num=16, is_same_heterogeneity=True, reproduce_mode='sexual', total_disp_among_rate=0.01, disp_within_rate=0.1, patch_dist_rate=0.00001, goal_path=None)
