@@ -21,24 +21,6 @@ MetaIBM adopts a package-oriented structure centered on the `metaibm` package an
 
 - 32x32_habitats_env2.csv is the values of gradients of environmental axis 2.
 
-## Highlights in v3.3.0
-
-- **global-habitat-network workflow** for habitat-level dispersal across the whole landscape
-
-- **extension-based implementation** through `extension/global_habitat_network.py`
-
-- **metacommunity integration** by installing extension methods into `metaibm/metacommunity.py`
-
-- continued support for kernel-based dispersal methods, with the global habitat network designed to work with `uniform`, `gaussian`, `exponential`, `cauchy`, and `power_law` dispersal kernels 
-
-## Highlights in v3.2.0
-
-- **Package-oriented layout** with core code in `metaibm/`
-- **Explicit package exports** through `metaibm/__init__.py`
-- **Bootstrap-based path initialization** using `experiments/bootstrap_metaibm.py`
-- **Experiment scripts** separated from core library code
-- Continued support for landscape construction, selection, reproduction, dispersal, disturbance, and data export workflows
-
 ---
 
 ## Project Layout
@@ -309,6 +291,28 @@ MetaIBM **v3.2.0** introduces **dispersal-kernel**, including uniform distributi
 **MetaIBM v3.1.0**
 
 MetaIBM **v3.1.0** adopts a **package-oriented structure** centered on the `metaibm` package and a lightweight bootstrap module for running experiment scripts from the `experiments/` directory. This README describes the package-oriented layout using `metaibm/` as the core library and `bootstrap_metaibm.py` as the preferred path initialization helper for experiment scripts. 
+
+
+
+## List of Highlist in History
+
+## Highlights in v3.3.0
+
+- **global-habitat-network workflow** for habitat-level dispersal across the whole landscape
+
+- **extension-based implementation** through `extension/global_habitat_network.py`
+
+- **metacommunity integration** by installing extension methods into `metaibm/metacommunity.py`
+
+- continued support for kernel-based dispersal methods, with the global habitat network designed to work with `uniform`, `gaussian`, `exponential`, `cauchy`, and `power_law` dispersal kernels
+
+## Highlights in v3.2.0
+
+- **Package-oriented layout** with core code in `metaibm/`
+- **Explicit package exports** through `metaibm/__init__.py`
+- **Bootstrap-based path initialization** using `experiments/bootstrap_metaibm.py`
+- **Experiment scripts** separated from core library code
+- Continued support for landscape construction, selection, reproduction, dispersal, disturbance, and data export workflows
 
 ---
 
