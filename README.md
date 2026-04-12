@@ -1,4 +1,4 @@
-# MetaIBM v3.3.0
+# MetaIBM v3.3.1
 
 **MetaIBM** is a Python-based individual-based / agent-based modelling package for simulating **metacommunity ecological and evolutionary dynamics** across multiple spatial scales. The package organizes the model into four core abstractions:
 
@@ -11,6 +11,16 @@ MetaIBM adopts a package-oriented structure centered on the `metaibm` package an
 
 ---
 
+## Highlights in v3.3.1
+
+- model-SLOSS-GREF.py is designed to be able to read landscape configuration from xxx.csv file
+
+- patch_habitat_layouts.csv is the values of patch and habitat layouts in the simulated landscape.
+
+- 32x32_habitats_env1.csv is the values of gradients of environmental axis 1.
+
+- 32x32_habitats_env2.csv is the values of gradients of environmental axis 2.
+
 ## Highlights in v3.3.0
 
 - **global-habitat-network workflow** for habitat-level dispersal across the whole landscape
@@ -19,9 +29,7 @@ MetaIBM adopts a package-oriented structure centered on the `metaibm` package an
 
 - **metacommunity integration** by installing extension methods into `metaibm/metacommunity.py`
 
-- continued support for kernel-based dispersal methods, with the global habitat network designed to work with `uniform`, `gaussian`, `exponential`, `cauchy`, and `power_law` dispersal kernels
-
-# 
+- continued support for kernel-based dispersal methods, with the global habitat network designed to work with `uniform`, `gaussian`, `exponential`, `cauchy`, and `power_law` dispersal kernels 
 
 ## Highlights in v3.2.0
 
@@ -46,6 +54,7 @@ MetaIBM/
 ├── experiments/
 │   ├── bootstrap_metaibm.py
 │   ├── model.py
+│   ├── model-sloss-GREF.py
 │   ├── model-sloss.py
 │   └── mpi_running.py
 ├── test/
@@ -287,16 +296,19 @@ The user manual documents:
 
 ## List of Versions History
 
+**MetaIBM v3.3.1**  
+MetaIBM **v3.3.1** updates `experiments/model-SLOSS-GREF.py` to read landscape layouts of patch and habitat in the simulated landscape. `patch_habitat_layouts.csv` is the values of patch and habitat X-Y location; `32x32_habitats_env1.csv` is the environmental gradients of env. axis 1;  32x32_habitats_env2.csv` is the environmental gradients of env. axis 2.
+
 **MetaIBM v3.3.0**  
 MetaIBM **v3.3.0** introduces the **global-habitat-network** extension for habitat-level dispersal across the whole landscape, adds the dedicated extension module `extension/global_habitat_network.py`, and supports extension installation into `metaibm/metacommunity.py` through `install_global_habitat_network_methods(metacommunity)`. This version continues the extension-oriented and package-based development direction of MetaIBM.
 
 **MetaIBM v3.2.0**
 
-MetaIBM **v3.2.0** introduces dispersal-kernel, including uniform distribution (by default), gaussian distribution (sigma), exponential distribution (rho), cauchy distribution, power_law distribution, updates metacommunity-level logic in dispersal among patches (the old code still works) and adds dedicated experiment and test scripts for improved validation and future development.
+MetaIBM **v3.2.0** introduces **dispersal-kernel**, including uniform distribution (by default), gaussian distribution (sigma), exponential distribution (rho), cauchy distribution, power_law distribution, updates metacommunity-level logic in dispersal among patches (the old code still works) and adds dedicated experiment and test scripts for improved validation and future development.
 
 **MetaIBM v3.1.0**
 
-MetaIBM **v3.1.0** adopts a package-oriented structure centered on the `metaibm` package and a lightweight bootstrap module for running experiment scripts from the `experiments/` directory. This README describes the package-oriented layout using `metaibm/` as the core library and `bootstrap_metaibm.py` as the preferred path initialization helper for experiment scripts. 
+MetaIBM **v3.1.0** adopts a **package-oriented structure** centered on the `metaibm` package and a lightweight bootstrap module for running experiment scripts from the `experiments/` directory. This README describes the package-oriented layout using `metaibm/` as the core library and `bootstrap_metaibm.py` as the preferred path initialization helper for experiment scripts. 
 
 ---
 
