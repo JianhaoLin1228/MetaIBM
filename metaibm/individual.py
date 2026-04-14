@@ -38,11 +38,15 @@ class individual():
             #genotype = np.array([1 if i in random_index else 0 for i in range(geno_len*2)])
             #bi_genotype = [genotype[0:geno_len], genotype[geno_len:geno_len*2]]
             
-            random_index_1 = random.sample(range(0,geno_len),int(mean*geno_len))
-            random_index_2 = random.sample(range(0,geno_len),int(mean*geno_len))
-            genotype_1 = np.array([1 if i in random_index_1 else 0 for i in range(geno_len)])
-            genotype_2 = np.array([1 if i in random_index_2 else 0 for i in range(geno_len)])
+            #random_index_1 = random.sample(range(0,geno_len),int(mean*geno_len))
+            #random_index_2 = random.sample(range(0,geno_len),int(mean*geno_len))
+            #genotype_1 = np.array([1 if i in random_index_1 else 0 for i in range(geno_len)])
+            #genotype_2 = np.array([1 if i in random_index_2 else 0 for i in range(geno_len)])
             
+            one_num = int(mean * geno_len)
+            genotype_1 = np.array([1]*one_num + [0]*(geno_len-one_num), dtype=np.int8)
+            genotype_2 = genotype_1.copy()
+
             bi_genotype = [genotype_1, genotype_2]
             phenotype = mean + random.gauss(0, var)
             
@@ -91,3 +95,36 @@ class individual():
                 phenotype = np.mean(self.genotype_set[pheno_name]) + random.gauss(0, var)
                 self.phenotype_set[pheno_name] = phenotype
         return 0
+    
+    def _copy_haplotype(self, hap_arr):
+        ''' hap is a haplotype in bi_genotype, np.array '''
+        return hap_arr.copy()
+    
+    def _segregate_one_haplotype(self, bi_genotype):
+        ''' bi_genotype = [hap1, hap2] '''
+        chosen = random.choice(bi_genotype)
+        return self._copy_haplotype(chosen)
+    
+    def _multi_crossover(self, bi_genotype, recomb_rate=0.0001):
+        ''' multiple crossover, interval-based mode 
+            bi_genotype = [hap1, hap2], hap1 / hap2 is 1D np.ndarray of shape=(L,) '''
+        hap1, hap2 = bi_genotype[0], bi_genotype[1]
+        L = hap1.shape[0]
+        switches = np.random.random(max(L-1, 0)) < recomb_rate      # L-1 intervals in L genes: True for switch, False for not switch
+        
+        source = np.empty(L, dtype=np.int8)
+        source[0] = np.random.randint(0, 2)                         # 0 for hap1, 1 for hap2
+
+        if L > 1: source[1:] = (source[0] + np.cumsum(switches, dtype=np.int32)) & 1       # how many switches and switches back?
+        gamete = np.where(source==0, hap1, hap2)
+        return self._copy_haplotype(gamete)
+    
+    def make_gamete(self, trait_name, recomb_method='segregation', recomb_rate=0.0):
+        ''' '''
+        if trait_name not in self.genotype_set:        
+            raise KeyError(f"{trait_name} not found in self.genotype_set")
+        if recomb_method == 'segregation': 
+            return self._segregate_one_haplotype(self.genotype_set[trait_name])
+        elif recomb_method == 'multi_crossover': 
+            return self._multi_crossover(bi_genotype=self.genotype_set[trait_name], recomb_rate=recomb_rate)
+        

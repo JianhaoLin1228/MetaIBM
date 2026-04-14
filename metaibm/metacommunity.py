@@ -4,6 +4,7 @@ Split from metacommunity_IBM.py.
 Compatibility-preserving class module.
 """
 
+import copy
 import numpy as np
 import random
 import matplotlib.pyplot as plt
@@ -316,10 +317,10 @@ class metacommunity():
         #print(log_info)
         return log_info
     
-    def meta_mainland_sexual_birth_mutate_germinate(self, sexual_birth_rate, mutation_rate, pheno_var_ls):
+    def meta_mainland_sexual_birth_mutate_germinate(self, sexual_birth_rate, mutation_rate, pheno_var_ls, recomb_method='segregation', recomb_rate=0.0):
         counter = 0
         for patch_id, patch_object in self.set.items():
-            counter += patch_object.patch_sexual_birth_germinate(sexual_birth_rate, mutation_rate, pheno_var_ls)
+            counter += patch_object.patch_sexual_birth_germinate(sexual_birth_rate, mutation_rate, pheno_var_ls, recomb_method=recomb_method, recomb_rate=recomb_rate)
             
         indi_num = self.get_meta_individual_num()
         empty_sites_num = self.show_meta_empty_sites_num()
@@ -327,10 +328,10 @@ class metacommunity():
         #print(log_info)
         return log_info
     
-    def meta_mainland_mixed_birth_mutate_germinate(self, asexual_birth_rate, sexual_birth_rate, mutation_rate, pheno_var_ls):
+    def meta_mainland_mixed_birth_mutate_germinate(self, asexual_birth_rate, sexual_birth_rate, mutation_rate, pheno_var_ls, recomb_method='segregation', recomb_rate=0.0):
         counter = 0
         for patch_id, patch_object in self.set.items():
-            counter += patch_object.patch_mixed_birth_germinate(asexual_birth_rate, sexual_birth_rate, mutation_rate, pheno_var_ls)
+            counter += patch_object.patch_mixed_birth_germinate(asexual_birth_rate, sexual_birth_rate, mutation_rate, pheno_var_ls, recomb_method=recomb_method, recomb_rate=recomb_rate)
         
         indi_num = self.get_meta_individual_num()
         empty_sites_num = self.show_meta_empty_sites_num()
@@ -357,7 +358,7 @@ class metacommunity():
         for propagules_rain_pos, meta_empty_pos in list(zip(propagules_rain_pos_ls, meta_empty_pos_ls)):
             propagules_patch_id, propagules_h_id, propagules_row_id, propagules_col_id =  propagules_rain_pos[0], propagules_rain_pos[1], propagules_rain_pos[2], propagules_rain_pos[3]
             patch_id, h_id, len_id, wid_id = meta_empty_pos[0], meta_empty_pos[1], meta_empty_pos[2], meta_empty_pos[3]
-            indi_object = mainland_obj.set[propagules_patch_id].set[propagules_h_id].set['microsite_individuals'][propagules_row_id][propagules_col_id]
+            indi_object = copy.deepcopy(mainland_obj.set[propagules_patch_id].set[propagules_h_id].set['microsite_individuals'][propagules_row_id][propagules_col_id])
             self.set[patch_id].set[h_id].add_individual(indi_object = indi_object, len_id=len_id, wid_id=wid_id)
             #self.set[patch_id].set[h_id].immigrant_pool.append(indi_object)
             counter += 1
@@ -386,13 +387,13 @@ class metacommunity():
         for (female_obj_pos, male_obj_pos), (empty_site_1_pos, empty_site_2_pos) in list(zip(propagules_rain_pairwise_pos_ls, meta_pairwise_empty_sites_ls)):
             
             female_propagules_patch_id, female_propagules_h_id, female_propagules_row_id, female_propagules_col_id =  female_obj_pos[0], female_obj_pos[1], female_obj_pos[2], female_obj_pos[3]
-            female_obj = mainland_obj.set[female_propagules_patch_id].set[female_propagules_h_id].set['microsite_individuals'][female_propagules_row_id][female_propagules_col_id]
+            female_obj = copy.deepcopy(mainland_obj.set[female_propagules_patch_id].set[female_propagules_h_id].set['microsite_individuals'][female_propagules_row_id][female_propagules_col_id])
             site_1_patch_id, site_1_h_id, site_1_len_id, site_1_wid_id = empty_site_1_pos[0], empty_site_1_pos[1], empty_site_1_pos[2], empty_site_1_pos[3]
             self.set[site_1_patch_id].set[site_1_h_id].add_individual(indi_object = female_obj, len_id=site_1_len_id, wid_id=site_1_wid_id)
             #self.set[site_1_patch_id].set[site_1_h_id].immigrant_pool.append(female_obj)
             
             male_propagules_patch_id, male_propagules_h_id, male_propagules_row_id, male_propagules_col_id =  male_obj_pos[0], male_obj_pos[1], male_obj_pos[2], male_obj_pos[3]
-            male_obj = mainland_obj.set[male_propagules_patch_id].set[male_propagules_h_id].set['microsite_individuals'][male_propagules_row_id][male_propagules_col_id]
+            male_obj = copy.deepcopy(mainland_obj.set[male_propagules_patch_id].set[male_propagules_h_id].set['microsite_individuals'][male_propagules_row_id][male_propagules_col_id])
             site_2_patch_id, site_2_h_id, site_2_len_id, site_2_wid_id = empty_site_2_pos[0], empty_site_2_pos[1], empty_site_2_pos[2], empty_site_2_pos[3]
             self.set[site_2_patch_id].set[site_2_h_id].add_individual(indi_object = male_obj, len_id=site_2_len_id, wid_id=site_2_wid_id)
             #self.set[site_2_patch_id].set[site_2_h_id].immigrant_pool.append(male_obj)
@@ -413,19 +414,19 @@ class metacommunity():
         #print(log_info)
         return log_info
         
-    def meta_sex_reproduce_mutate_into_offspring_pool(self, sexual_birth_rate, mutation_rate, pheno_var_ls):  
+    def meta_sex_reproduce_mutate_into_offspring_pool(self, sexual_birth_rate, mutation_rate, pheno_var_ls, recomb_method='segregation', recomb_rate=0.0):  
         counter = 0
         for patch_id, patch_object in self.set.items():
-            counter += patch_object.patch_sex_reproduce_mutate_into_offspring_pool(sexual_birth_rate, mutation_rate, pheno_var_ls)
+            counter += patch_object.patch_sex_reproduce_mutate_into_offspring_pool(sexual_birth_rate, mutation_rate, pheno_var_ls, recomb_method=recomb_method, recomb_rate=recomb_rate)
         
         log_info = '%s: there are %d individuals born into the offspring_pool; there are %d individuals in the offspring_pool \n'%(self.metacommunity_name, counter, self.meta_offspring_pool_individual_num())
         #print(log_info)
         return log_info
             
-    def meta_mix_reproduce_mutate_into_offspring_pool(self, asexual_birth_rate, sexual_birth_rate, mutation_rate, pheno_var_ls):       
+    def meta_mix_reproduce_mutate_into_offspring_pool(self, asexual_birth_rate, sexual_birth_rate, mutation_rate, pheno_var_ls, recomb_method='segregation', recomb_rate=0.0):       
         counter = 0
         for patch_id, patch_object in self.set.items():
-            counter += patch_object.patch_mix_reproduce_mutate_into_offspring_pool(asexual_birth_rate, sexual_birth_rate, mutation_rate, pheno_var_ls)
+            counter += patch_object.patch_mix_reproduce_mutate_into_offspring_pool(asexual_birth_rate, sexual_birth_rate, mutation_rate, pheno_var_ls, recomb_method=recomb_method, recomb_rate=recomb_rate)
         
         log_info = '[Reproduction into offspring_pool] in %s: there are %d individuals born into the offspring_pool; there are %d individuals in the offspring_pool \n'%(self.metacommunity_name, counter, self.meta_offspring_pool_individual_num())
         #print(log_info)
@@ -783,7 +784,7 @@ class metacommunity():
         #print(log_info)
         return log_info
     
-    def meta_local_germinate_and_birth_from_offspring_marker_and_immigrant_marker_pool(self, mutation_rate, pheno_var_ls):
+    def meta_local_germinate_and_birth_from_offspring_marker_and_immigrant_marker_pool(self, mutation_rate, pheno_var_ls, recomb_method='segregation', recomb_rate=0.0):
         ''' germination individual marker randomly chosen from local habitst offspring pool + immigrant_pool and then birth process according to the marker information '''
         counter = 0
         for patch_id, patch_object in self.set.items():
@@ -801,11 +802,11 @@ class metacommunity():
                     if reproduce_mode == 'asexual':
                         indi_object = birth_h_object.hab_asex_reproduce_mutate_with_num(mutation_rate, pheno_var_ls, num=1)[0]
                     elif reproduce_mode == 'sexual':
-                        indi_object = birth_h_object.hab_sex_reproduce_mutate_with_num(mutation_rate, pheno_var_ls, num=1)[0]
+                        indi_object = birth_h_object.hab_sex_reproduce_mutate_with_num(mutation_rate, pheno_var_ls, num=1, recomb_method=recomb_method, recomb_rate=recomb_rate)[0]
                     elif reproduce_mode == 'mix_asexual':
                         indi_object = birth_h_object.hab_mix_asex_reproduce_mutate_with_num(mutation_rate, pheno_var_ls, num=1)[0]
                     elif reproduce_mode == 'mix_sexual':
-                        indi_object = birth_h_object.hab_mix_sex_reproduce_mutate_with_num(mutation_rate, pheno_var_ls, num=1)[0]
+                        indi_object = birth_h_object.hab_mix_sex_reproduce_mutate_with_num(mutation_rate, pheno_var_ls, num=1, recomb_method=recomb_method, recomb_rate=recomb_rate)[0]
                     
                     h_object.add_individual(indi_object=indi_object, len_id=row_id, wid_id=col_id)
                     counter += 1

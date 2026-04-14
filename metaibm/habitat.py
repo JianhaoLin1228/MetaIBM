@@ -291,8 +291,8 @@ class habitat():
     def hab_sexual_pairwise_parents_num(self):
         return len(self.hab_sexual_pairwise_parents_ls())  
     
-    def hab_sex_reproduce_mutate_with_num(self, mutation_rate, pheno_var_ls, num):
-        ''' asexual reproduction for dispersal controlled by the parameter, num '''
+    def hab_sex_reproduce_mutate_with_num(self, mutation_rate, pheno_var_ls, num, recomb_method='segregation', recomb_rate=0.0):
+        ''' sexual reproduction for dispersal controlled by the parameter, num '''
         hab_disp_pool = []
         pairwise_parents_pos_ls = random.sample(self.hab_sexual_pairwise_parents_ls(), num)
         
@@ -308,11 +308,13 @@ class habitat():
                 pheno_name = new_indivi_object.pheno_names_ls[i]
                 var = pheno_var_ls[i] ##### to be improved  #####
                 
-                female_bi_genotype = female_indi_obj.genotype_set[pheno_name]
-                genotype1 = random.sample(female_bi_genotype, 1)[0]
-                
-                male_bi_genotype = male_indi_obj.genotype_set[pheno_name]
-                genotype2 = random.sample(male_bi_genotype, 1)[0]
+                #female_bi_genotype = female_indi_obj.genotype_set[pheno_name]
+                #genotype1 = random.sample(female_bi_genotype, 1)[0]
+                #male_bi_genotype = male_indi_obj.genotype_set[pheno_name]
+                #genotype2 = random.sample(male_bi_genotype, 1)[0]
+
+                genotype1 = female_indi_obj.make_gamete(trait_name=pheno_name, recomb_method=recomb_method, recomb_rate=recomb_rate)
+                genotype2 = male_indi_obj.make_gamete(trait_name=pheno_name, recomb_method=recomb_method, recomb_rate=recomb_rate)
                 
                 new_bi_genotype = [genotype1, genotype2]
                 phenotype = np.mean(new_bi_genotype) + random.gauss(0, var)
@@ -368,7 +370,7 @@ class habitat():
             hab_disp_pool.append(new_indivi_object)
         return hab_disp_pool
     
-    def hab_mix_sex_reproduce_mutate_with_num(self, mutation_rate, pheno_var_ls, num):
+    def hab_mix_sex_reproduce_mutate_with_num(self, mutation_rate, pheno_var_ls, num, recomb_method='segregation', recomb_rate=0.0):
         ''' mixed sexual reproduction for dispersal controlled by the parameter, num '''
         hab_disp_pool = []
         pairwise_parents_pos_ls = random.sample(self.hab_mixed_sexual_pairwise_parents_ls(), num)
@@ -385,12 +387,14 @@ class habitat():
                 pheno_name = new_indivi_object.pheno_names_ls[i]
                 var = pheno_var_ls[i] ##### to be improved  #####
                 
-                female_bi_genotype = female_indi_obj.genotype_set[pheno_name]
-                genotype1 = random.sample(female_bi_genotype, 1)[0]
+                #female_bi_genotype = female_indi_obj.genotype_set[pheno_name]
+                #genotype1 = random.sample(female_bi_genotype, 1)[0]
+                #male_bi_genotype = male_indi_obj.genotype_set[pheno_name]
+                #genotype2 = random.sample(male_bi_genotype, 1)[0]
                 
-                male_bi_genotype = male_indi_obj.genotype_set[pheno_name]
-                genotype2 = random.sample(male_bi_genotype, 1)[0]
-                
+                genotype1 = female_indi_obj.make_gamete(trait_name=pheno_name, recomb_method=recomb_method, recomb_rate=recomb_rate)
+                genotype2 = male_indi_obj.make_gamete(trait_name=pheno_name, recomb_method=recomb_method, recomb_rate=recomb_rate)
+
                 new_bi_genotype = [genotype1, genotype2]
                 phenotype = np.mean(new_bi_genotype) + random.gauss(0, var)
                 
@@ -421,7 +425,7 @@ class habitat():
             counter += 1
         return counter
         
-    def hab_sexual_reprodece_germinate(self, sexual_birth_rate, mutation_rate, pheno_var_ls):
+    def hab_sexual_reprodece_germinate(self, sexual_birth_rate, mutation_rate, pheno_var_ls, recomb_method='segregation', recomb_rate=0.0):
         ''' birth into empty site directly without considering the competition between local offspring and immigrant offspring '''
         counter = 0
         empty_sites_pos_ls = self.empty_site_pos_ls
@@ -429,7 +433,7 @@ class habitat():
             num = len(empty_sites_pos_ls)
         elif len(empty_sites_pos_ls) >= int(self.hab_sexual_pairwise_parents_num() * sexual_birth_rate): 
             num = int(self.hab_sexual_pairwise_parents_num() * sexual_birth_rate)  
-        hab_offsprings_for_germinate = self.hab_sex_reproduce_mutate_with_num(mutation_rate, pheno_var_ls, num)
+        hab_offsprings_for_germinate = self.hab_sex_reproduce_mutate_with_num(mutation_rate, pheno_var_ls, num, recomb_method=recomb_method, recomb_rate=recomb_rate)
     
         random.shuffle(empty_sites_pos_ls)
         random.shuffle(hab_offsprings_for_germinate)
@@ -441,7 +445,7 @@ class habitat():
             counter += 1
         return counter
     
-    def hab_mixed_reproduce_germinate(self, asexual_birth_rate, sexual_birth_rate, mutation_rate, pheno_var_ls):
+    def hab_mixed_reproduce_germinate(self, asexual_birth_rate, sexual_birth_rate, mutation_rate, pheno_var_ls, recomb_method='segregation', recomb_rate=0.0):
         ''' birth into empty site directly without considering the competition between local offspring and immigrant offspring '''
         counter = 0
         empty_sites_pos_ls = self.empty_site_pos_ls
@@ -458,7 +462,7 @@ class habitat():
             asex_num = asex_offs_expectation_num
             sex_num = sex_offs_expectation_num
         
-        hab_offsprings_for_germinate = self.hab_mix_asex_reproduce_mutate_with_num(mutation_rate, pheno_var_ls, asex_num) + self.hab_mix_sex_reproduce_mutate_with_num(mutation_rate, pheno_var_ls, sex_num)
+        hab_offsprings_for_germinate = self.hab_mix_asex_reproduce_mutate_with_num(mutation_rate, pheno_var_ls, asex_num) + self.hab_mix_sex_reproduce_mutate_with_num(mutation_rate, pheno_var_ls, sex_num, recomb_method=recomb_method, recomb_rate=recomb_rate)
              
         for pos, indi_object in list(zip(empty_sites_pos_ls, hab_offsprings_for_germinate)):
             len_id = pos[0]
@@ -496,7 +500,7 @@ class habitat():
         The function will be called by the the patch_object of the habitat belong with
         '''
         self.offspring_marker_pool = []
-        offspring_num = self.indi_num * sexual_birth_rate
+        offspring_num = self.hab_sexual_pairwise_parents_num() * sexual_birth_rate
         offspring_num_int = int(offspring_num)                    #整数部分
         offspring_num_dem = offspring_num - offspring_num_int     #小数部分
         
@@ -554,21 +558,21 @@ class habitat():
         self.offspring_pool = offspring_ls + one_offspring_ls
         return len(self.offspring_pool)
     
-    def hab_sex_reproduce_mutate_into_offspring_pool(self, sexual_birth_rate, mutation_rate, pheno_var_ls):
+    def hab_sex_reproduce_mutate_into_offspring_pool(self, sexual_birth_rate, mutation_rate, pheno_var_ls, recomb_method='segregation', recomb_rate=0.0):
         self.offspring_pool = []
         offspring_num = self.hab_sexual_pairwise_parents_num() * sexual_birth_rate
         offspring_num_int = int(offspring_num)                    #整数部分
         offspring_num_dem = offspring_num - offspring_num_int     #小数部分
         
-        offspring_ls = self.hab_sex_reproduce_mutate_with_num(mutation_rate, pheno_var_ls, num=offspring_num_int) # a list of offspring individual object
+        offspring_ls = self.hab_sex_reproduce_mutate_with_num(mutation_rate, pheno_var_ls, num=offspring_num_int, recomb_method=recomb_method, recomb_rate=recomb_rate) # a list of offspring individual object
         if offspring_num_dem > np.random.uniform(0,1,1)[0]:
-            one_offspring_ls = self.hab_sex_reproduce_mutate_with_num(mutation_rate, pheno_var_ls, num=1)
+            one_offspring_ls = self.hab_sex_reproduce_mutate_with_num(mutation_rate, pheno_var_ls, num=1, recomb_method=recomb_method, recomb_rate=recomb_rate)
         else:
             one_offspring_ls = []
         self.offspring_pool = offspring_ls + one_offspring_ls
         return len(self.offspring_pool)
     
-    def hab_mix_reproduce_mutate_into_offspring_pool(self, asexual_birth_rate, sexual_birth_rate, mutation_rate, pheno_var_ls):
+    def hab_mix_reproduce_mutate_into_offspring_pool(self, asexual_birth_rate, sexual_birth_rate, mutation_rate, pheno_var_ls, recomb_method='segregation', recomb_rate=0.0):
         self.offspring_pool = []
         asex_offspring_num = len(self.asexual_parent_pos_ls) * asexual_birth_rate
         asex_offspring_num_int = int(asex_offspring_num)
@@ -584,9 +588,9 @@ class habitat():
         sex_offspring_num_int = int(sex_offspring_num)
         sex_offspring_num_dem = sex_offspring_num - sex_offspring_num_int
         
-        sex_offspring_ls = self.hab_mix_sex_reproduce_mutate_with_num(mutation_rate, pheno_var_ls, num=sex_offspring_num_int)
+        sex_offspring_ls = self.hab_mix_sex_reproduce_mutate_with_num(mutation_rate, pheno_var_ls, num=sex_offspring_num_int, recomb_method=recomb_method, recomb_rate=recomb_rate)
         if sex_offspring_num_dem > np.random.uniform(0,1,1)[0]:
-            sex_one_offspring_ls = self.hab_mix_sex_reproduce_mutate_with_num(mutation_rate, pheno_var_ls, num=1)
+            sex_one_offspring_ls = self.hab_mix_sex_reproduce_mutate_with_num(mutation_rate, pheno_var_ls, num=1, recomb_method=recomb_method, recomb_rate=recomb_rate)
         else:
             sex_one_offspring_ls = []
         self.offspring_pool = asex_offspring_ls + asex_one_offspring_ls + sex_offspring_ls + sex_one_offspring_ls
