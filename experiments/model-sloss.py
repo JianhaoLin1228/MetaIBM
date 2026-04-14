@@ -274,11 +274,11 @@ def main(rep, patch_num, is_heterogeneity, reproduce_mode, total_disp_among_rate
         elif reproduce_mode == 'sexual':
             ''' dead selection process in mainland and metacommunity '''
             write_in_logger_info += mainland.meta_dead_selection(base_dead_rate, fitness_wid, method='niche_gaussian')
-            write_in_logger_info += mainland.meta_mainland_mixed_birth_mutate_germinate(asexual_birth_rate, sexual_birth_rate, mutation_rate, pheno_var_ls)
+            write_in_logger_info += mainland.meta_mainland_mixed_birth_mutate_germinate(asexual_birth_rate, sexual_birth_rate, mutation_rate, pheno_var_ls, recomb_method='segregation', recomb_rate=0.0)
             write_in_logger_info += meta_obj.meta_dead_selection(base_dead_rate, fitness_wid, method='niche_gaussian')
             ''' reproduction process '''
             write_in_logger_info += meta_obj.meta_mix_reproduce_calculation_with_offspring_marker_pool(asexual_birth_rate, sexual_birth_rate)
-            #meta_obj.meta_mix_reproduce_mutate_into_offspring_pool(asexual_birth_rate, sexual_birth_rate, mutation_rate, pheno_var_ls)
+            #meta_obj.meta_mix_reproduce_mutate_into_offspring_pool(asexual_birth_rate, sexual_birth_rate, mutation_rate, pheno_var_ls, recomb_method='segregation', recomb_rate=0.0)
             ''' dispersal processes '''
             write_in_logger_info += meta_obj.pairwise_sexual_colonization_from_prpagules_rains(mainland, propagules_rain_num)
             write_in_logger_info += meta_obj.meta_dispersal_within_patch_from_offspring_marker_to_immigrant_marker_pool(disp_within_rate)
@@ -286,7 +286,7 @@ def main(rep, patch_num, is_heterogeneity, reproduce_mode, total_disp_among_rate
             write_in_logger_info += meta_obj.dispersal_aomng_patches_from_offspring_marker_pool_to_immigrant_marker_pool(total_disp_among_rate, method='exponential', rho=2)
             #meta_obj.dispersal_aomng_patches_from_offspring_pool_to_immigrant_pool(total_disp_among_rate)
             ''' germination processes '''
-            write_in_logger_info += meta_obj.meta_local_germinate_and_birth_from_offspring_marker_and_immigrant_marker_pool(mutation_rate, pheno_var_ls)
+            write_in_logger_info += meta_obj.meta_local_germinate_and_birth_from_offspring_marker_and_immigrant_marker_pool(mutation_rate, pheno_var_ls, recomb_method='segregation', recomb_rate=0.0)
             #meta_obj.meta_local_germinate_from_offspring_and_immigrant_pool()
             #meta_obj.meta_local_germinate_from_offspring_immigrant_and_dormancy_pool()
             ''' dormancy process (not running) '''
