@@ -1,4 +1,4 @@
-# MetaIBM v3.3.1
+# MetaIBM v3.4.0
 
 **MetaIBM** is a Python-based individual-based / agent-based modelling package for simulating **metacommunity ecological and evolutionary dynamics** across multiple spatial scales. The package organizes the model into four core abstractions:
 
@@ -11,15 +11,16 @@ MetaIBM adopts a package-oriented structure centered on the `metaibm` package an
 
 ---
 
-## Highlights in v3.3.1
+## Highlights in v3.4.0
 
-- model-SLOSS-GREF.py is designed to be able to read landscape configuration from xxx.csv file
+- Introduced **individual-level genetic recombination** for sexual reproduction, including explicit gamete formation and interval-based **multi-crossover recombination**, enabling realistic inheritance dynamics in spatially explicit metacommunity simulations.
 
-- patch_habitat_layouts.csv is the values of patch and habitat layouts in the simulated landscape.
+- Enabled consistent propagation of **recombination parameters (`recomb_method`, `recomb_rate`)** across individual, habitat, patch, and metacommunity levels, covering mainland burn-in, offspring-marker generation, and local germination–birth processes.
 
-- 32x32_habitats_env1.csv is the values of gradients of environmental axis 1.
+- BUG-FIXING: Improved simulation correctness by **deep-copying mainland colonists** during propagule-based colonization, preventing unintended state sharing between mainland and metacommunity individuals.
 
-- 32x32_habitats_env2.csv is the values of gradients of environmental axis 2.
+- BUG-FIXING: Aligned **pure-sexual offspring-marker calculations** with the number of sexual parent pairs rather than total individual abundance, ensuring consistency between sexual reproduction, marker pools, and offspring generation.
+
 
 ---
 
@@ -278,6 +279,10 @@ The user manual documents:
 
 ## List of Versions History
 
+**MetaIBM v3.4.0** 
+
+MetaIBM **v3.4.0**extends the core eco-evolutionary framework with explicit genetic recombination support and improves the internal consistency of sexual reproduction and colonization workflows. This release strengthens MetaIBM’s ability to model standing genetic variation, recombination, and dispersal-driven eco-evolutionary dynamics in spatially explicit metacommunities, providing a more reliable foundation for comparative and large-scale simulation studies.
+
 **MetaIBM v3.3.1**  
 MetaIBM **v3.3.1** updates `experiments/model-SLOSS-GREF.py` to read landscape layouts of patch and habitat in the simulated landscape. `patch_habitat_layouts.csv` is the values of patch and habitat X-Y location; `32x32_habitats_env1.csv` is the environmental gradients of env. axis 1;  32x32_habitats_env2.csv` is the environmental gradients of env. axis 2.
 
@@ -294,7 +299,27 @@ MetaIBM **v3.1.0** adopts a **package-oriented structure** centered on the `meta
 
 
 
-## List of Highlist in History
+# List of Highlist in History
+
+## Highlights in v3.4.0
+
+- Introduced **individual-level genetic recombination** for sexual reproduction, including explicit gamete formation and interval-based **multi-crossover recombination**, enabling realistic inheritance dynamics in spatially explicit metacommunity simulations.
+
+- Enabled consistent propagation of **recombination parameters (`recomb_method`, `recomb_rate`)** across individual, habitat, patch, and metacommunity levels, covering mainland burn-in, offspring-marker generation, and local germination–birth processes.
+
+- BUG-FIXING: Improved simulation correctness by **deep-copying mainland colonists** during propagule-based colonization, preventing unintended state sharing between mainland and metacommunity individuals.
+
+- BUG-FIXING: Aligned **pure-sexual offspring-marker calculations** with the number of sexual parent pairs rather than total individual abundance, ensuring consistency between sexual reproduction, marker pools, and offspring generation.
+
+## Highlights in v3.3.1
+
+- model-SLOSS-GREF.py is designed to be able to read landscape configuration from xxx.csv file
+
+- patch_habitat_layouts.csv is the values of patch and habitat layouts in the simulated landscape.
+
+- 32x32_habitats_env1.csv is the values of gradients of environmental axis 1.
+
+- 32x32_habitats_env2.csv is the values of gradients of environmental axis 2.
 
 ## Highlights in v3.3.0
 
