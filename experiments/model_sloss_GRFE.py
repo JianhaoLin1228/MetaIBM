@@ -256,13 +256,13 @@ def main(rep, patch_num, is_same_heterogeneity, reproduce_mode, total_disp_among
                                                        file_name=goal_path+'/'+'rep=%d-meta_y_axis_phenotype_all_time.csv.gz'%(rep), 
                                                        index=['y_axis_environment_values'], columns=columns, mode='w')
     
-    all_burn_in_time_steps = 1000
+    all_burn_in_time_steps = 100
+    write_in_logger_info = 'burn in simulation for the mainland for 100 time-steps ...... '
+    write_logger(write_in_logger_info, is_logging, logger_file)
     for _ in range(all_burn_in_time_steps):
-        write_in_logger_info = 'burn in simulation for the mainland for 1000 time-steps ...... '
         mainland.meta_dead_selection(base_dead_rate, fitness_wid, method='niche_gaussian')
         if reproduce_mode == 'asexual': mainland.meta_mainland_asexual_birth_mutate_germinate(asexual_birth_rate, mutation_rate, pheno_var_ls)
         elif reproduce_mode == 'sexual': mainland.meta_mainland_mixed_birth_mutate_germinate(asexual_birth_rate, sexual_birth_rate, mutation_rate, pheno_var_ls, recomb_method=recomb_method, recomb_rate=recomb_rate)
-        write_logger(write_in_logger_info, is_logging, logger_file)
 
     for time_step in range(all_time_step): 
 
