@@ -35,10 +35,9 @@ MetaIBM/
 │   └── metacommunity.py
 ├── experiments/
 │   ├── bootstrap_metaibm.py
-│   ├── model.py
 │   ├── model-sloss-GREF.py
-│   ├── model-sloss.py
-│   └── mpi_running.py
+│   └── mpi_running_GREF.py
+│   ├── slrum.sh
 ├── test/
 ├── extention/
 │   ├── __init__.py
@@ -65,9 +64,9 @@ Core package code.
 Runnable experiment scripts.
 
 - `bootstrap_metaibm.py` — ensures the project root is available on `sys.path`, so `metaibm` can be imported reliably when experiment scripts are run directly from the `experiments/` directory.
-- `model.py` — single-run simulation script that constructs the metacommunity, initializes mainlands, executes the time loop, and writes outputs.
-- `mpi_running.py` — MPI-based batch launcher for sweeping parameter combinations and invoking `model.main(...)` across multiple ranks.
-
+- `model_sloss_GRFE.py` — single-run simulation script that constructs the metacommunity, initializes mainlands, executes the time loop, and writes outputs.
+- `mpi_running_GRFE.py` — MPI-based batch launcher for sweeping parameter combinations and invoking `model.main(...)` across multiple ranks.
+- `slrum.sh` — a script for submitting jobs in a supercomputer.
 #### `docs/`
 
 Documentation resources.
