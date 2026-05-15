@@ -8,14 +8,14 @@ Source: `metaibm/patch.py`
 
 ### Instance Attributes
 
-| Attribute | Description |
-|-----------|-------------|
-| `name` | string identifier of the patch (e.g. `'patch0'`) |
-| `index` | integer index of the patch within the metacommunity |
-| `set` | dictionary storing habitat objects, keyed by habitat name (e.g. `{'h1': habitat_obj, 'h2': habitat_obj}`) |
-| `hab_num` | count of habitats in the patch (initialized to 0) |
-| `hab_id_ls` | ordered list of habitat name identifiers |
-| `location` | tuple `(X, Y)` coordinates of the patch in the landscape |
+| Attribute | Description | Type | Example |
+|-----------|-------------|-----------|-----------|
+| `name` | patch_id: string identifier of the patch | str | `'patch0'` |
+| `index` | integer index of the patch within the metacommunity | int | 0, 1, ... |
+| `set` | dictionary storing habitat objects, keyed by habitat name (habitat id) | dict | `{'h0': habitat_obj, 'h1': habitat_obj}` |
+| `hab_num` | number of habitats in the patch (initialized to 0 when no habitats) | int | 1, ... |
+| `hab_id_ls` | list of habitat id, ordered by their index | list of strings | `['h0', 'h1',...]` |
+| `location` | tuple `(X, Y)` coordinates of the patch in the landscape | tuple of floats | (1.5, 2.5) or (1, 2) |
 
 ---
 
@@ -35,7 +35,7 @@ Source: `metaibm/patch.py`
 
 **Description:**
 
-Returns a dictionary aggregating data from all habitats in the patch. Each key is a habitat name and each value is the habitat's internal data set (`habitat.set`).
+Returns a dictionary aggregating data from all habitats in the patch. Each key is a habitat name (habitat id) and each value is the habitat's internal data set (`habitat.set`). Examples: `{'h0': habitat_obj.set, 'h1': habitat_obj.set}`
 
 ---
 
@@ -46,13 +46,13 @@ Returns a dictionary aggregating data from all habitats in the patch. Each key i
 | Parameter | Description |
 |-----------|-------------|
 | `self` | self |
-| `hab_name` | string name for the new habitat |
+| `hab_name` | string name for the new habitat, i.e., habitat id |
 | `hab_index` | integer index for the habitat within this patch |
 | `hab_location` | tuple `(X, Y)` location of the habitat |
 | `num_env_types` | number of environment types |
-| `env_types_name` | list of environment type names |
-| `mean_env_ls` | list of mean values for each environment type |
-| `var_env_ls` | list of variance values for each environment type |
+| `env_types_name` | list of environment type names, length of the list = `num_env_types` |
+| `mean_env_ls` | list of mean values for each environment type, length of the list = `num_env_types` |
+| `var_env_ls` | list of variance values for each environment type, length of the list = `num_env_types` |
 | `length` | number of rows in the habitat's microsite grid |
 | `width` | number of columns in the habitat's microsite grid |
 | `dormancy_pool_max_size` | maximum capacity of the habitat's dormancy pool |
@@ -76,14 +76,14 @@ Creates a new `habitat` object with the specified parameters and adds it to `sel
 | `pheno_names_ls` | list of phenotype names |
 | `pheno_var_ls` | list of phenotypic variance per trait |
 | `geno_len_ls` | list of genotype lengths per trait |
-| `reproduce_mode` | reproduction mode: `'asexual'`, `'sexual'`, or `'mixed'` |
-| `species_2_phenotype_ls` | <span style="color:red">list of mean phenotype value lists, one per species; the species ID is derived as `'sp' + str(index_in_list + 1)`</span> |
+| `reproduce_mode` | reproduction mode: `'asexual'`, `'sexual'` |
+| `species_2_phenotype_ls` | <span style="color:red">list of mean preset phenotype value lists of each species, one per species; the species ID is derived as `'sp' + str(index_in_list + 1)`</span> |
 
 **Returns:** `int` (0)
 
 **Description:**
 
-Initializes all habitats in the patch by calling each habitat's `hab_initialize()` with the given trait configuration. Fills all microsites with individuals.
+Initializes all habitats in the patch by calling each habitat's `hab_initialize()` with the given trait configuration (genotypes-phenotype maps). Fills all microsites with individuals.
 
 ---
 
@@ -122,7 +122,7 @@ Applies mortality selection across all habitats in the patch by calling each hab
 
 **Description:**
 
-Returns the total number of living individuals across all habitats by summing each habitat's `indi_num`.
+Returns the total number of living individuals across all habitats within this patch by summing each habitat's `indi_num`.
 
 ---
 
@@ -138,7 +138,7 @@ Returns the total number of living individuals across all habitats by summing ea
 
 **Description:**
 
-Returns a list of all empty microsite positions across all habitats. Each tuple contains the habitat name and the row/column indices of the empty microsite.
+Returns a list of all empty microsite positions across all habitats within this patch. Each tuple contains the habitat name (habitat id) and the row/column indices of the empty microsite.
 
 ---
 
@@ -154,7 +154,7 @@ Returns a list of all empty microsite positions across all habitats. Each tuple 
 
 **Description:**
 
-Returns the total count of empty microsites across all habitats in the patch.
+Returns the total count of empty microsites across all habitats within this patch.
 
 ---
 
@@ -170,7 +170,7 @@ Returns the total count of empty microsites across all habitats in the patch.
 
 **Description:**
 
-Returns a list of paired empty microsite positions `[((h_id, row, col), (h_id, row, col)), ...]` across all habitats. Used for sexual colonization requiring paired placement.
+Returns a list of paired empty microsite positions `[((h_id, row, col), (h_id, row, col)), ...]` across all habitats within this patch. Used for sexual colonization requiring paired placement.
 
 ---
 
@@ -186,7 +186,7 @@ Returns a list of paired empty microsite positions `[((h_id, row, col), (h_id, r
 
 **Description:**
 
-Returns a list of female-male paired occupied positions across all habitats. Used for sexual reproduction pairing.
+Returns a list of female-male (same species) paired occupied positions across all habitats within this patch. Used for sexual reproduction pairing.
 
 ---
 
@@ -202,7 +202,7 @@ Returns a list of female-male paired occupied positions across all habitats. Use
 
 **Description:**
 
-Returns a list of all occupied microsite positions across all habitats. Each tuple contains the habitat name and the row/column indices.
+Returns a list of all occupied microsite positions across all habitats within this patch. Each tuple contains the habitat name and the row/column indices.
 
 ---
 
@@ -218,7 +218,7 @@ Returns a list of all occupied microsite positions across all habitats. Each tup
 
 **Description:**
 
-Returns the combined list of all offspring marker tuples from all habitats' `offspring_marker_pool`.
+Returns the combined list of all offspring marker tuples from all habitats' `offspring_marker_pool` within this patch.
 
 ---
 
@@ -234,7 +234,7 @@ Returns the combined list of all offspring marker tuples from all habitats' `off
 
 **Description:**
 
-Returns the combined list of all offspring `individual` objects from all habitats' `offspring_pool`.
+Returns the combined list of all offspring `individual` objects from all habitats' `offspring_pool` within this patch.
 
 ---
 
@@ -250,7 +250,7 @@ Returns the combined list of all offspring `individual` objects from all habitat
 
 **Description:**
 
-Returns the combined list of all dormant `individual` objects from all habitats' `dormancy_pool`.
+Returns the combined list of all dormant `individual` objects from all habitats' `dormancy_pool` within this patch.
 
 ---
 
@@ -266,7 +266,7 @@ Returns the combined list of all dormant `individual` objects from all habitats'
 
 **Description:**
 
-Returns the combined list of all offspring and dormant `individual` objects from all habitats.
+Returns the combined list of all offspring and dormant `individual` objects from all habitats within this patch.
 
 ---
 
@@ -331,13 +331,13 @@ Extracts environmental values for a specific environment type from all microsite
 | `self` | self |
 | `d` | float; base death rate for survival calculation |
 | `w` | float; fitness width parameter |
-| `species_2_phenotype_ls` | <span style="color:red">list of mean phenotype value lists, one per species</span> |
+| `species_2_phenotype_ls` | <span style="color:red">list of (preset) phenotype value lists, one per species in an order of species id, i.e., index+1</span> |
 
 **Returns:** `numpy.ndarray` (shape: hab_num x hab_size)
 
 **Description:**
 
-Calculates the optimal species ID (highest survival rate) for each <span style="color:red">habitat</span> based on <span style="color:red">the habitat's mean environment values (`mean_env_ls`)</span> and all species' phenotype configurations. <span style="color:red">The calculation is per-habitat (not per-microsite): all microsites within a habitat share the same optimal species value.</span> Returns a 2D array of optimal species IDs per habitat.
+Calculates the optimal species ID (highest survival rate) for each <span style="color:red">habitat</span> based on <span style="color:red">the habitat's mean environment values (`mean_env_ls`)</span> and all species' phenotype configurations. <span style="color:red">The calculation is per-habitat (not per-microsite): all microsites within a habitat share the same optimal species value (sp_id, `species_2_phenotype_ls.index()+1`).</span> Returns a 2D array of optimal species IDs per habitat.
 
 ---
 
@@ -552,7 +552,7 @@ Creates both asexual and sexual offspring as full `individual` objects with muta
 
 **Description:**
 
-Splits a list into `n` roughly equal sublists after shuffling. Helper method for distributing individuals or markers evenly among habitats.
+Splits a list into `n` roughly equal sublists after shuffling. Helper method for distributing individuals or markers evenly among habitats within this patch.
 
 ---
 
@@ -809,7 +809,7 @@ Executes within-patch dispersal from combined offspring and dormancy pools to ta
 
 ---
 
-### Local Germination
+### Local Germination (or local recolonization)
 
 #### `patch_local_germinate_from_offspring_and_dormancy_pool`
 

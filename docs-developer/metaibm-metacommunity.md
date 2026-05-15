@@ -10,14 +10,14 @@ Source: `metaibm/metacommunity.py`
 
 ### Instance Attributes
 
-| Attribute | Description |
-|-----------|-------------|
-| `set` | dictionary storing patch objects, keyed by patch name (e.g. `{'patch0': patch_obj, 'patch1': patch_obj}`) |
-| `patch_num` | count of patches in the metacommunity (initialized to 0) |
-| `metacommunity_name` | string name of the metacommunity |
-| `patch_id_ls` | ordered list of patch IDs aligned with `patch.index` (0, 1, 2, ..., N) |
-| `patch_id_2_index_dir` | dictionary mapping patch_id (name) to patch.index for quick lookup |
-| `pairwise_patch_distance_matrix` | numpy matrix of Euclidean distances between all patch pairs; row/column i corresponds to the patch with `index == i` |
+| Attribute | Description | Type | Example |
+|-----------|-------------|-----------|-----------|
+| `set` | dictionary storing patch objects, keyed by patch name (patch id) | dict | `{'patch1': patch_obj, 'patch2': patch_obj}` |
+| `patch_num` | count of patches in the metacommunity (initialized to 0 when no patches were added) | int | 1, 2, ... |
+| `metacommunity_name` | string name of the metacommunity | str | `'mainland'` or  `'metacommunity'` |
+| `patch_id_ls` | ordered list of patch IDs aligned with `patch.index` (0, 1, 2, ..., N) | list of strings | `['patch1','patch2'..]` |
+| `patch_id_2_index_dir` | dictionary mapping patch_id (name) to patch.index for quick lookup | dict | `{'patch1': index, 'patch2': index}` |
+| `pairwise_patch_distance_matrix` | numpy matrix of Euclidean distances between all patch pairs; row/column i corresponds to the patch with `index == i` | np.matrix | np.matrix[i, j] = distance(patchi, patchj) |
 
 ---
 
@@ -33,11 +33,11 @@ Source: `metaibm/metacommunity.py`
 |-----------|-------------|
 | `self` | self |
 
-**Returns:** `dict`
+**Returns:** `dict`, {'patch_id': {'h_id': h_object.set, ...}, ...}
 
 **Description:**
 
-Returns a dictionary aggregating data from all patches by calling `get_data()` on each patch object. Keys are patch names, values are patch data dictionaries.
+Returns a dictionary aggregating data from all patches by calling `get_data()` on each patch object. Keys are patch names, values are patch data dictionaries. 
 
 ---
 
@@ -89,13 +89,23 @@ Adds a patch to the metacommunity. Stores it in `self.set`, increments `patch_nu
 | `hab_num_y_axis_in_patch` | number of habitats along the y-axis within a patch |
 | `hab_y_len` | length (rows) of each habitat |
 | `hab_x_len` | width (columns) of each habitat |
-| `mask_loc` | `'lower'`, `'upper'`, or `None`; controls triangular masking for heatmaps |
+| `mask_loc` | `'lower'`, `'upper'`, or `None` (defalut); controls triangular masking for heatmaps |
 
 **Returns:** `tuple` (reshape_data_col_row, mask_data_col_row)
 
 **Description:**
 
-Reshapes flat habitat data into a 2D array suitable for heatmap visualization, arranging habitats in their spatial positions with gaps between them. Also produces a corresponding mask array for optional triangular masking.
+Reshapes flat habitat data into a 2D array suitable for heatmap visualization, arranging habitats in their spatial positions with gaps between them. Also produces a corresponding mask array for optional triangular masking. 
+
+<span style="color:red"> 'A possible input for df: </span>
+
+<span style="color:red">`df = pd.DataFrame(patch_object.get_patch_microsites_individals_sp_id_values())`</span>
+
+<span style="color:red">A possible output with df above: </span>
+
+<span style="color:red">``reshape_data_col_row` is patch-scale sp distribution data for plotting, arranged by habitat location in a patch (`hab_num_x_axis_in_patch`, `hab_num_y_axis_in_patch`) with gap (1) to distinguish boundary of habitats within this patch.' </span>
+
+<span style="color:red">``mask_data_col_row`  is upper or lower triangle indentity matrix</span>
 
 ---
 
@@ -148,6 +158,8 @@ Visualizes species distribution across all patches using seaborn heatmaps. Each 
 
 Visualizes the phenotype distribution for a specific trait across all patches using heatmaps. Phenotype values are shown per microsite with `NaN` for empty sites.
 
+<span style="color:red">sns.heatmap : ``vmin=0` `vmax=0.8` </span>
+
 ---
 
 #### `meta_show_environment_distribution`
@@ -173,6 +185,8 @@ Visualizes the phenotype distribution for a specific trait across all patches us
 **Description:**
 
 Visualizes an environmental variable across all patches using heatmaps with optional triangular masking.
+
+<span style="color:red">sns.heatmap : ``vmin=0` `vmax=0.8` </span>
 
 ---
 
@@ -202,6 +216,8 @@ Visualizes an environmental variable across all patches using heatmaps with opti
 **Description:**
 
 Overlays two environmental variables on the same heatmap using triangular masking (e.g. lower triangle for environment1, upper triangle for environment2). Allows side-by-side comparison of two environment gradients.
+
+<span style="color:red">sns.heatmap : ``vmin=0` `vmax=0.8` </span>
 
 ---
 
@@ -693,11 +709,11 @@ Probabilistically rounds fractional values in a matrix. For each element, the de
 | `method` | dispersal kernel type: `'uniform'`, `'gaussian'`, `'exponential'`, `'cauchy'`, or `'power_law'` |
 | `**kwargs` | method-specific parameters (see below) |
 
-**Returns:** `float`
+**Returns:**  `float`
 
 **Description:**
 
-Calculates the relative dispersal strength between two patches based on their distance. Supported methods:
+Calculates the relative dispersal strength (Dij) between two patches (i, j) based on their distance. Supported methods:
 - `'uniform'`: `D = 1.0` (equal for all distances)
 - `'gaussian'`: `D = exp(-(d^2) / (2 * sigma^2))` (requires `sigma`)
 - `'exponential'`: `D = rho * exp(-rho * d)` (requires `rho`)
@@ -899,7 +915,7 @@ Computes actual dispersal numbers as `min(emigrants, immigrants)` per element, t
 
 **Description:**
 
-Moves individuals from offspring + dormancy pools directly into empty microsites of other patches. <span style="color:red">Uses `get_dispersal_among_num_matrix()` which takes `min(emigrants, immigrants)` to cap dispersal by available empty sites.</span> Samples migrants from source pools, places them into random empty microsites of target patches. Skips if `patch_num < 2`. Returns a log string with the dispersal count.
+Moves individuals from offspring + dormancy pools directly into empty microsites of other patches. <span style="color:red">Uses `get_dispersal_among_num_matrix()` which takes `min(emigrants, immigrants)` to cap dispersal by available empty sites or available offspring.</span> Samples migrants from source pools, places them into random empty microsites of target patches. Skips if `patch_num < 2`. Returns a log string with the dispersal count.
 
 ---
 
@@ -918,7 +934,7 @@ Moves individuals from offspring + dormancy pools directly into empty microsites
 
 **Description:**
 
-Moves offspring individual objects from source patches' `offspring_pool` to destination patches' `immigrant_pool` (staged for later germination). <span style="color:red">Uses `offspring_pool_num * disp_rate_matrix` directly (does NOT cap by empty sites — capping happens later during germination).</span> Distributes immigrants evenly across habitats within each target patch. Returns a log string with the count.
+Moves offspring individual objects from source patches' `offspring_pool` to destination patches' `immigrant_pool` (staged for later local germination or local recolonization). <span style="color:red">Uses `offspring_pool_num * disp_rate_matrix` directly (does NOT cap by empty sites — capping happens later during local germination or local recolonization).</span> Distributes immigrants evenly across habitats within each target patch. Returns a log string with the count.
 
 ---
 
@@ -1030,7 +1046,7 @@ Executes within-patch dispersal of offspring + dormancy pool individuals directl
 
 ---
 
-### Local Germination
+### Local Germination (or local recolonization)
 
 #### `meta_local_germinate_from_offspring_and_dormancy_pool`
 
@@ -1213,13 +1229,13 @@ Applies habitat-level disturbance stochastically. Each habitat within each patch
 | `self` | self |
 | `d` | float; base death rate for survival calculation |
 | `w` | float; fitness width parameter |
-| `species_2_phenotype_ls` | <span style="color:red">list of mean phenotype value lists, one per species</span> |
+| `species_2_phenotype_ls` | <span style="color:red">list of preset (mean) phenotype value lists, one per species in an order of sp_id</span> |
 
 **Returns:** `numpy.ndarray` (shape: 1 x total_microsites)
 
 **Description:**
 
-Calculates the optimal species ID (species with highest survival rate) for every <span style="color:red">habitat</span> across the metacommunity based on <span style="color:red">each habitat's mean environment values</span> and species phenotype configurations. <span style="color:red">All microsites within a habitat share the same optimal species value.</span> Returns a flattened 1D array reshaped to `(1, total_microsites)`.
+Calculates the optimal species ID (species with highest survival rate) for every <span style="color:red">habitat</span> across the metacommunity based on <span style="color:red">each habitat's mean environment values</span> and species preset phenotype configurations. <span style="color:red">All microsites within a habitat share the same optimal species value.</span> Returns a flattened 1D array reshaped to `(1, total_microsites)`.
 
 ---
 

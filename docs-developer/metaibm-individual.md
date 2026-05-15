@@ -8,13 +8,13 @@ Source: `metaibm/individual.py`
 
 ### Instance Attributes
 
-| Attribute | Description | Type | e.g. |
+| Attribute | Description | Type | Example (e.g.) |
 |-----------|-------------|-----------|-----------|
 | `species_id` | species identifier of the individual object | str | `'sp1'`, `'sp2'`, `'sp3'` |
 | `gender` | gender of the individual object for sexual reproduction | str | `'female'` or `'male'` |
 | `traits_num` | number of traits the individual has | int | 2 |
 | `pheno_names_ls` | a list of trait (or phenotype) names, length equals `traits_num` | list | `['phenotype1', 'phenotype2']` |
-| `genotype_set` | dictionary mapping each phenotype name to a diploid genotype (list of two binary numpy arrays). Each array has length `geno_len` with values 0 or 1. Initialized to `None` until `random_init_indi()` is called. | dict | `{'phenotype1': [array([1,0,1,...]), array([0,1,0,...])]}` |
+| `genotype_set` | dictionary mapping each phenotype name to a diploid genotype (list of two binary numpy arrays). Each array has length `geno_len` with values 0 or 1. Initialized to `None` until `random_init_indi()` is called. | dict | `{'phenotype1': [np.array([1,0,1,...]),np.array([0,1,0,...])], 'phenotype2': [np.array([1,0,1,...]),np.array([0,1,0,...])]}` |
 | `phenotype_set` | dictionary mapping each phenotype name to its phenotype value (float). Initialized to `None` until `random_init_indi()` is called. | dict | `{'phenotype1': 0.523, 'phenotype2': 0.641}` |
 | `age` | age of the individual object with `time_step` as units | int | 0, 1, ..., or 5000, ... |
 
@@ -26,19 +26,19 @@ Source: `metaibm/individual.py`
 
 **Parameters:**
 
-| Parameter | Description |
-|-----------|-------------|
-| `self` | self |
-| `mean_pheno_val_ls` | list of floats; the mean phenotype values for each trait in the species population (e.g. `[0.5, 0.6]`) |
-| `pheno_var_ls` | list of floats; the standard deviation of phenotypic Gaussian noise for each trait (e.g. `[0.1, 0.15]`) |
-| `geno_len_ls` | list of ints; the number of loci per haploid genotype for each trait (e.g. `[10, 20]`) |
+| Parameter | Description | Type | Example (e.g.) |
+|-----------|-------------|-----------|-----------|
+| `self` | self | self | self |
+| `mean_pheno_val_ls` | the mean phenotype values for each trait of the target species | list of floats | `[0.2, 0.4]` |
+| `pheno_var_ls` | the standard deviation of phenotypic Gaussian noise for each trait | list of floats | `[0.025, 0.025]` |
+| `geno_len_ls` | the number of loci per haploid genotype for each trait | list of ints | `[20, 20]` |
 
 **Returns:** `int` (0)
 
 **Description:**
 
 Randomly initializes the individual's genotype and phenotype for all traits. For each trait:
-1. Creates two independent haploid genotype arrays (diploid), each of length `geno_len`. The number of 1-alleles in each array is `int(mean * geno_len)`, with positions chosen randomly.
+1. Creates two independent haploid genotype arrays (diploid), each of length `geno_len`. The number of 1-alleles in each array is `int(mean * geno_len)`, with positions chosen randomly. The remaining alleles are 0s. 
 2. Stores the two arrays as `[genotype_1, genotype_2]` in `genotype_set[pheno_name]`.
 3. Samples the phenotype from a Gaussian distribution: `phenotype = mean + N(0, var)` and stores it in `phenotype_set[pheno_name]`.
 
@@ -64,11 +64,11 @@ Returns an ordered list of the individual's phenotype values, in the same order 
 
 **Parameters:**
 
-| Parameter | Description |
-|-----------|-------------|
-| `self` | self |
-| `rate` | float (0 to 1); per-locus mutation probability. Each allele in both haploid genotypes is independently flipped (0->1 or 1->0) with this probability. |
-| `pheno_var_ls` | list of floats; the standard deviation of Gaussian noise added when recalculating phenotype after mutation, one per trait |
+| Parameter | Description | Type | Example (e.g.) |
+|-----------|-------------|-----------|-----------|
+| `self` | self | self | self |
+| `rate` | per-locus mutation probability. Each allele in both haploid genotypes is independently flipped (0->1 or 1->0) with this probability. | float | 0.0001 (0 to 1) |
+| `pheno_var_ls` | the standard deviation of Gaussian noise added when recalculating phenotype after mutation, one per trait | list of floats | `[0.025, 0.025]` |
 
 **Returns:** `int` (0)
 

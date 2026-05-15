@@ -8,32 +8,32 @@ Source: `metaibm/habitat.py`
 
 ### Instance Attributes
 
-| Attribute | Description |
-|-----------|-------------|
-| `name` | string identifier of the habitat (e.g. `'h1'`) |
-| `index` | integer index of the habitat within its parent patch |
-| `location` | tuple `(X, Y)` coordinates of the habitat in the landscape |
-| `num_env_types` | number of environmental factors in this habitat |
-| `env_types_name` | list of environment type names (e.g. `['temperature', 'altitude']`) |
-| `mean_env_ls` | list of mean values for each environment type |
-| `var_env_ls` | list of variance (std) values for each environment type; micro-environmental values follow `N(mean, var)` |
-| `length` | number of rows in the microsite grid |
-| `width` | number of columns in the microsite grid |
-| `size` | total number of microsites (`length * width`) |
-| `set` | dictionary containing the microsite grid and environment landscapes. Keys include each environment type name (mapped to a `[length x width]` numpy array of environmental values) and `'microsite_individuals'` (a `[length x width]` 2D list where each cell holds an `individual` object or `None`) |
-| `indi_num` | current count of individuals occupying microsites |
-| `offspring_pool` | list of offspring `individual` objects awaiting germination (object pipeline) |
-| `immigrant_pool` | list of immigrant `individual` objects received from dispersal (object pipeline) |
-| `dormancy_pool` | list of dormant `individual` objects |
-| `offspring_marker_pool` | list of lightweight tuples `(patch_name, hab_name, reproduce_mode)` representing offspring (marker pipeline) |
-| `immigrant_marker_pool` | list of lightweight marker tuples received from dispersal (marker pipeline) |
-| `species_category` | nested dict `{species_id: {gender: [(row, col), ...]}}` tracking individual locations by species and gender |
-| `occupied_site_pos_ls` | list of `(row, col)` tuples for occupied microsites |
-| `empty_site_pos_ls` | list of `(row, col)` tuples for empty microsites |
-| `dormancy_pool_max_size` | maximum capacity of the dormancy pool |
-| `reproduction_mode_threhold` | float (0.897); fitness threshold separating asexual parents (>= threshold) from sexual parents (< threshold) in mixed reproduction mode |
-| `asexual_parent_pos_ls` | list of `(row, col)` positions of high-fitness individuals selected for asexual reproduction in mixed mode |
-| `species_category_for_sexual_parents_pos` | dict tracking low-fitness individual positions by species/gender for sexual reproduction in mixed mode |
+| Attributexample | Description | Type | Examples |
+|-----------|-------------|-----------|-----------|
+| `name` | string identifier of the habitat (e.g. `'h1'`) | str | `'h1'` |
+| `index` | integer index of the habitat within its parent patch | int | 0, 1,2 |
+| `location` | tuple `(X, Y)` coordinates of the habitat in the landscape | tuple of int | (2, 3) |
+| `num_env_types` | number of environmental axises in this habitat | int | 2 |
+| `env_types_name` | list of environment types (environmental axises) names (e.g. `['temperature', 'altitude']`) | list of strings | `['env1', 'env2']` |
+| `mean_env_ls` | list of mean values for each environment type | list of floats | `[0.2, 0.4]` |
+| `var_env_ls` | list of variance (std) values for each environment type; micro-environmental values follow `N(mean, var)` | list of float | [0.025, 0.025] |
+| `length` | number of rows in the microsite grid | int | 10 |
+| `width` | number of columns in the microsite grid | int | 10 |
+| `size` | total number of microsites (`length * width`) | int | `length * width` |
+| `set` | dictionary containing the microsite grid and environment landscapes. Keys include each environment type name (mapped to a `[length x width]` numpy array of environmental values) and `'microsite_individuals'` (a `[length x width]` 2D list where each cell holds an `individual` object or `None`) | dict | keys= env_name in `env_types_name` and `'microsite_individuals'`  values = 2D numpy array of env. values & 2D list of individual_objects or None |
+| `indi_num` | current count of individuals occupying microsites | int | 0 ~ size |
+| `offspring_pool` | list of offspring `individual` objects awaiting germination (object pipeline) | list | `[individual_obj, ...]` |
+| `immigrant_pool` | list of immigrant `individual` objects received from dispersal (object pipeline) | list | `[individual_obj, ...]` |
+| `dormancy_pool` | list of dormant `individual` objects | list | `[individual_obj, ...]` |
+| `offspring_marker_pool` | list of lightweight tuples `(patch_name, hab_name, reproduce_mode)` representing offspring (marker pipeline). Marker is the info. of the expected birth place of the new propagules | list | `[(patch_name, hab_name, reproduce_mode), ...]` |
+| `immigrant_marker_pool` | list of lightweight marker tuples received from dispersal (marker pipeline). Marker is the info. of the expected birth place of the new propagules | list | `[(patch_name, hab_name, reproduce_mode), ...]` |
+| `species_category` | nested dict `{species_id: {gender: [(row, col), ...]}}` tracking individual locations by species and gender | dict | `{species_id: {gender: [(row, col), ...]}}` |
+| `occupied_site_pos_ls` | list of `(row, col)` tuples for occupied microsites | list | `[(row, col),...]` |
+| `empty_site_pos_ls` | list of `(row, col)` tuples for empty microsites | list | `[(row, col),...]` |
+| `dormancy_pool_max_size` | maximum capacity of the dormancy pool | int | 0, ..., 1000, ... |
+| `reproduction_mode_threhold` | fitness threshold separating asexual parents (>= threshold) from sexual parents (< threshold) in mixed reproduction mode | float | For some zooplankton, they reproduce asexually under favorable environmental conditions and sexually under unfavorable environmental conditions. |
+| `asexual_parent_pos_ls` | list of `(row, col)` positions of high-fitness individuals selected for asexual reproduction in mixed mode | list | `[(row, col),...]` |
+| `species_category_for_sexual_parents_pos` | dict tracking low-fitness individual positions by species/gender for sexual reproduction in mixed mode. Data structure is the same as `species_category` | dict | `{species_id: {gender: [(row, col), ...]}}` |
 
 ---
 
@@ -48,15 +48,15 @@ Source: `metaibm/habitat.py`
 | Parameter | Description |
 |-----------|-------------|
 | `self` | self |
-| `env_name_ls` | list of environment type names to reset |
-| `env_mean_val_ls` | list of new mean values for each specified environment |
-| `env_var_val_ls` | list of new variance values for each specified environment |
+| `env_name_ls` | list of environment axises names to reset |
+| `env_mean_val_ls` | list of new mean values for each specified environment axis |
+| `env_var_val_ls` | list of new variance values for each specified environment axis |
 
 **Returns:** `int` (0)
 
 **Description:**
 
-Completely regenerates the environmental landscape for specified environment types. For each specified environment, creates a new `[length x width]` numpy array with values sampled from `N(new_mean, new_var)` and updates `mean_env_ls` and `var_env_ls`.
+Completely regenerates the environmental landscape for specified environment axis. For each specified environment, creates a new `[length x width]` numpy array with values sampled from `N(new_mean, new_var)` and updates `self.mean_env_ls` and `self.var_env_ls`.
 
 ---
 
@@ -68,14 +68,14 @@ Completely regenerates the environmental landscape for specified environment typ
 |-----------|-------------|
 | `self` | self |
 | `env_name_ls` | list of environment type names to modify |
-| `delta_mean_ls` | list of additive offsets to apply to each environment's mean |
-| `delta_var_ls` | list of additive offsets to apply to each environment's variance (optional, defaults to no change) |
+| `delta_mean_ls` | list of additive offsets to apply to each environment's mean (positive or negative values) |
+| `delta_var_ls` | list of additive offsets to apply to each environment's variance (optional, defaults to no change)  (positive or negative values) |
 
 **Returns:** `int` (0)
 
 **Description:**
 
-Shifts environmental values incrementally by adding delta offsets to the current mean and variance, then calls `hab_reset_environment_values()` with the adjusted values. Used for simulating environmental change over time. <span style="color:red">Note: internally, `new_env_mean_ls` is computed by `zip(self.mean_env_ls, delta_mean_ls)`. This assumes `delta_mean_ls` has the same length and order as `self.mean_env_ls` (i.e., covers all environment types). Passing a subset may produce incorrect pairings.</span>
+Shifts environmental values incrementally by adding delta offsets  (positive or negative values) to the current mean and variance, then calls `hab_reset_environment_values()` with the adjusted values. Used for simulating environmental change over time. <span style="color:red">Note: internally, `new_env_mean_ls` is computed by `zip(self.mean_env_ls, delta_mean_ls)`. This assumes `delta_mean_ls` has the same length and order as `self.mean_env_ls` (i.e., covers all environment types). Passing a subset may produce incorrect pairings.</span>
 
 ---
 
@@ -199,14 +199,14 @@ Returns a list of environment values at a specific microsite `(len_id, wid_id)`,
 | `pheno_names_ls` | list of phenotype names |
 | `pheno_var_ls` | list of phenotypic variance (std) per trait |
 | `geno_len_ls` | list of genotype lengths per trait |
-| `reproduce_mode` | reproduction mode string: `'asexual'`, `'sexual'`, or `'mixed'` |
+| `reproduce_mode` | reproduction mode string: `'asexual'`, `'sexual'`, controlling the gender of initializing individual objects |
 | `species_2_phenotype_ls` | <span style="color:red">list of mean phenotype value lists, one per species; the species ID is derived as `'sp' + str(index_in_list + 1)`</span> |
 
 **Returns:** `int` (0)
 
 **Description:**
 
-Fills all microsites with newly created individuals. For each microsite, creates an `individual` with species ID determined by matching the habitat's `mean_env_ls` to an entry in `species_2_phenotype_ls` <span style="color:red">(via `list.index()`)</span>, gender set to `'female'` if asexual mode or randomly assigned if sexual mode, and randomly initialized genotype/phenotype via `random_init_indi()`. <span style="color:red">Note: `'mixed'` mode is not explicitly handled — only `'asexual'` and `'sexual'` are checked, so passing `'mixed'` may leave `gender` undefined.</span>
+Fills all microsites with newly created individuals. For each microsite, creates an `individual` with species ID determined by matching the habitat's `mean_env_ls` to an entry in `species_2_phenotype_ls` <span style="color:red">(via `list.index()`)</span>, gender set to `'female'` if asexual mode or randomly assigned (`'female'`or `'male'`) if sexual mode, and randomly initialized genotype/phenotype via `random_init_indi()`. 
 
 ---
 
@@ -219,17 +219,17 @@ Fills all microsites with newly created individuals. For each microsite, creates
 | Parameter | Description |
 |-----------|-------------|
 | `self` | self |
-| `d` | float; base death rate (disturbance strength) |
+| `d` | float; baseline death rate |
 | `phenotype_ls` | list of the individual's phenotype values for each trait |
 | `env_val_ls` | list of the microsite's environment values for each type |
 | `w` | float; fitness width parameter (default 0.5), controls strength of stabilizing selection |
-| `method` | `'niche_gaussian'` (default) or `'neutral_uniform'` |
+| `method` | `'niche_gaussian'` (default, niche model) or `'neutral_uniform'`(neutral model) |
 
 **Returns:** `float`
 
 **Description:**
 
-Calculates the probability that an individual survives to the next generation. With `'niche_gaussian'` method: `survival = (1-d) * product_over_traits(exp(-((phenotype_i - env_i) / w)^2))`, implementing stabilizing selection toward local environment. With `'neutral_uniform'` method: returns `(1-d)` regardless of phenotype-environment match.
+Calculates the probability that an individual survives to the next time-steps. With `'niche_gaussian'` method: `survival = (1-d) * product_over_traits(exp(-((phenotype_i - env_i) / w)^2))`, implementing stabilizing selection toward local environment. With `'neutral_uniform'` method: returns `(1-d)` regardless of phenotype-environment match.
 
 ---
 
@@ -240,7 +240,7 @@ Calculates the probability that an individual survives to the next generation. W
 | Parameter | Description |
 |-----------|-------------|
 | `self` | self |
-| `base_dead_rate` | float; base death rate `d` passed to `survival_rate()` |
+| `base_dead_rate` | float; baseline death rate `d` passed to `survival_rate()` |
 | `fitness_wid` | float; fitness width `w` passed to `survival_rate()` |
 | `method` | selection method string passed to `survival_rate()` |
 
@@ -248,7 +248,7 @@ Calculates the probability that an individual survives to the next generation. W
 
 **Description:**
 
-Applies mortality selection across all occupied microsites. For each individual: calculates survival rate, then kills the individual with probability `(1 - survival_rate)`. Survivors with high fitness (>= 0.897 threshold) are assigned to `asexual_parent_pos_ls`; survivors with lower fitness are assigned to `species_category_for_sexual_parents_pos`. Returns the total number of dead individuals.
+Applies mortality selection across all occupied microsites. For each individual: calculates survival rate, then kills the individual with probability `(1 - survival_rate)`. Returns the total number of dead individuals. In mixed mode, survivors with high fitness (>= 0.897 threshold) are assigned to `asexual_parent_pos_ls`; survivors with lower fitness are assigned to `species_category_for_sexual_parents_pos`.
 
 ---
 
@@ -269,7 +269,7 @@ Applies mortality selection across all occupied microsites. For each individual:
 
 **Description:**
 
-Creates `num` asexual offspring by randomly sampling parents from occupied microsites. For each offspring: deep-copies the parent, recalculates phenotype as `mean(genotype) + N(0, var)`, then applies mutation. Returns the list of new individual objects.
+Creates `num` asexual offspring by randomly sampling parents from occupied microsites. For each offspring: deep-copies the parent, recalculates phenotype as `mean(genotype) + N(0, var)`, then applies mutation (if it was mutated, phenotypes would be calculated again). Returns the list of new individual objects.
 
 ---
 
@@ -316,11 +316,11 @@ Returns the number of available sexual breeding pairs (i.e. `len(hab_sexual_pair
 | `pheno_var_ls` | list of phenotypic variance per trait for mutation |
 | `num` | int; number of offspring to produce |
 
-**Returns:** `list` of `individual`
+**Returns:** `list` of `individual` objects
 
 **Description:**
 
-Creates `num` sexual offspring from randomly sampled parent pairs. For each offspring: deep-copies the female parent, randomly assigns gender, inherits one haploid genotype from each parent (diploid recombination), recalculates phenotype from the new genotype `mean(genotype) + N(0, var)`, then applies mutation. Returns the list of new individual objects.
+Creates `num` sexual offspring from randomly sampled parent pairs. For each offspring: deep-copies the female parent, randomly assigns gender, inherits one haploid genotype from each parent (i.e., separation and independent assortment of homologous chromosomes), recalculates phenotype from the new genotype `mean(genotype) + N(0, var)`, then applies mutation. Returns the list of new individual objects.
 
 ---
 
@@ -336,7 +336,7 @@ Creates `num` sexual offspring from randomly sampled parent pairs. For each offs
 
 **Description:**
 
-Returns female-male parent pairs only from low-fitness individuals stored in `species_category_for_sexual_parents_pos` (individuals below the 0.897 threshold). Used exclusively in mixed reproduction mode.
+Returns female-male parent pairs only from low-fitness individuals stored in `species_category_for_sexual_parents_pos` (individuals below the `reproduction_mode_threhold`). Used exclusively in mixed reproduction mode.
 
 ---
 
@@ -486,7 +486,7 @@ Performs mixed asexual + sexual reproduction and immediately germinates offsprin
 
 **Description:**
 
-Calculates the expected number of asexual offspring (`indi_num * asexual_birth_rate`) with probabilistic rounding of the fractional part, then creates that many lightweight marker tuples `(patch_name, hab_name, 'asexual')` in `offspring_marker_pool`. Actual individual creation is deferred until germination. Returns the marker count.
+Calculates the expected number of asexual offspring (`indi_num * asexual_birth_rate`) with probabilistic rounding of the fractional part, then creates that many lightweight marker tuples `(patch_name, hab_name, 'asexual')` in `offspring_marker_pool`. Actual individual creation is deferred until germination (i.e., recolonization). Returns the marker count.
 
 ---
 
@@ -587,7 +587,7 @@ Creates both asexual offspring (from high-fitness parents) and sexual offspring 
 
 ---
 
-### Local Germination
+### Local Germination (or Recolonization)
 
 #### `hab_local_germinate_from_offspring_and_dormancy_pool`
 
