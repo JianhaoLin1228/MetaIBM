@@ -35,4 +35,9 @@ results/
 outputs/
 tmp/
 scratch/
+
+# AI assistant config (local only, not shared on GitHub)
+CLAUDE.md
+CLAUDE.local.md
+AGENTS.md
 ``
