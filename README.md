@@ -1,4 +1,4 @@
-# MetaIBM v3.3.1
+# MetaIBM v3.3.2
 
 **MetaIBM** is a Python-based individual-based / agent-based modelling package for simulating **metacommunity ecological and evolutionary dynamics** across multiple spatial scales. The package organizes the model into four core abstractions:
 
@@ -10,6 +10,14 @@
 MetaIBM adopts a package-oriented structure centered on the `metaibm` package and a lightweight bootstrap module for running experiment scripts from the `experiments/` directory.
 
 ---
+
+## Highlights in v3.3.2
+
+- Add ../docs-users: user manual 
+
+- Add ../docs-developer: developer manual 
+
+  
 
 ## Highlights in v3.3.1
 
