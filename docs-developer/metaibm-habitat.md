@@ -504,7 +504,7 @@ Calculates the expected number of asexual offspring (`indi_num * asexual_birth_r
 
 **Description:**
 
-Calculates the expected number of sexual offspring (<span style="color:red">`indi_num * sexual_birth_rate`</span>) with probabilistic rounding, then creates marker tuples `(patch_name, hab_name, 'sexual')` in `offspring_marker_pool`. Returns the marker count. <span style="color:red">Note: unlike `hab_sex_reproduce_mutate_into_offspring_pool` which uses `pairwise_parents_num`, this method uses `indi_num` as the base.</span>
+Calculates the expected number of sexual offspring (`hab_sexual_pairwise_parents_num() * sexual_birth_rate`) with probabilistic rounding, then creates marker tuples `(patch_name, hab_name, 'sexual')` in `offspring_marker_pool`. Returns the marker count. 
 
 ---
 

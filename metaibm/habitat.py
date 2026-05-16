@@ -496,7 +496,7 @@ class habitat():
         The function will be called by the the patch_object of the habitat belong with
         '''
         self.offspring_marker_pool = []
-        offspring_num = self.indi_num * sexual_birth_rate
+        offspring_num = self.hab_sexual_pairwise_parents_num() * sexual_birth_rate
         offspring_num_int = int(offspring_num)                    #整数部分
         offspring_num_dem = offspring_num - offspring_num_int     #小数部分
         
