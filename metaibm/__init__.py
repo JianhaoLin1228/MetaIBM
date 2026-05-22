@@ -8,5 +8,6 @@ from .individual import individual
 from .habitat import habitat
 from .patch import patch
 from .metacommunity import metacommunity
+from .simulator import simulator
 
-__all__ = ["individual", "habitat", "patch", "metacommunity"]
+__all__ = ["individual", "habitat", "patch", "metacommunity", "simulator"]
