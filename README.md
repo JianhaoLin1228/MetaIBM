@@ -24,6 +24,57 @@ MetaIBM adopts a package-oriented structure centered on the `metaibm` package an
 
 ---
 
+## Installation
+
+MetaIBM is pure Python and has no `setup.py` / `pyproject.toml`; install the dependencies into a Python environment and run the scripts directly.
+
+### Dependencies
+
+- `numpy` (>= 1.24)
+- `matplotlib` (>= 3.7)
+- `pandas` (>= 2.0)
+- `seaborn` (>= 0.12)
+- `mpi4py` (>= 3.1) — only required for MPI-based batch experiments (`experiments/mpi_running.py`)
+
+Exact pins are listed in `requirements.txt`.
+
+### Recommended: Conda environment
+
+```bash
+conda create -n metaibm python=3.11 numpy matplotlib pandas seaborn mpi4py
+conda activate metaibm
+```
+
+or with `pip`:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+### Platform notes
+
+- **Windows** — install Anaconda, then `conda install numpy matplotlib pandas seaborn`. For MPI runs, install Microsoft C++ Build Tools and Microsoft MPI (MSMPI) first, then `conda install -c conda-forge mpi4py` (or `pip install mpi4py`).
+- **Linux** — install Anaconda and add it to `PATH` in `~/.bashrc`, then `conda install numpy matplotlib pandas seaborn`. For MPI runs, build / install Open MPI and then `conda install -c conda-forge mpi4py`.
+- **macOS (Apple Silicon)** — install Anaconda and the standard scientific stack as above. For MPI runs, `brew install open-mpi` and `pip3 install mpi4py`.
+
+### Getting the code
+
+MetaIBM is not on PyPI; clone or download the repository and run scripts from inside it:
+
+```bash
+git clone <repo-url> MetaIBM
+cd MetaIBM
+python playgrounds/model-simulator-GRFE.py
+```
+
+The bootstrap module in each script directory (`experiments/`, `playgrounds/`, `test/`) puts the project root on `sys.path`, so no extra install step is needed for the `metaibm` package itself.
+
+See `docs-users/MetaIBM users manual.md` (Section 2: Installation; Section 7.1: MPI installation) for the fully detailed, per-platform walkthrough.
+
+---
+
 ## Project Layout
 
 ```text
@@ -145,31 +196,6 @@ from metaibm.patch import patch
 from metaibm.metacommunity import metacommunity
 from metaibm.simulator import simulator
 ```
-
----
-
-## Installation
-
-### Recommended environment
-
-Use a dedicated Conda environment (or any isolated Python environment) with the scientific Python stack.
-
-Typical dependencies used by the project include:
-
-- `numpy`
-- `matplotlib`
-- `pandas`
-- `seaborn`
-- `mpi4py` (for MPI execution)
-
-Example with Conda:
-
-```bash
-conda create -n metaibm python=3.11 numpy matplotlib pandas seaborn mpi4py
-conda activate metaibm
-```
-
-> On Windows, MPI execution may additionally depend on an installed MPI runtime (for example MSMPI), and your `mpi4py` installation should match the active MPI implementation.
 
 ---
 
