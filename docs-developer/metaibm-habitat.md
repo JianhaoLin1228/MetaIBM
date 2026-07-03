@@ -30,7 +30,7 @@ Source: `metaibm/habitat.py`
 | `species_category` | nested dict `{species_id: {gender: [(row, col), ...]}}` tracking individual locations by species and gender | dict | `{species_id: {gender: [(row, col), ...]}}` |
 | `occupied_site_pos_ls` | list of `(row, col)` tuples for occupied microsites | list | `[(row, col),...]` |
 | `empty_site_pos_ls` | list of `(row, col)` tuples for empty microsites | list | `[(row, col),...]` |
-| `dormancy_pool_max_size` | maximum capacity of the dormancy pool | int | 0, ..., 1000, ... |
+| `dormancy_pool_max_size` | maximum capacity of the dormancy pool; *optional*, default `0` (no dormancy) | int | 0, ..., 1000, ... |
 | `reproduction_mode_threhold` | fitness threshold separating asexual parents (>= threshold) from sexual parents (< threshold) in mixed reproduction mode | float | For some zooplankton, they reproduce asexually under favorable environmental conditions and sexually under unfavorable environmental conditions. |
 | `asexual_parent_pos_ls` | list of `(row, col)` positions of high-fitness individuals selected for asexual reproduction in mixed mode | list | `[(row, col),...]` |
 | `species_category_for_sexual_parents_pos` | dict tracking low-fitness individual positions by species/gender for sexual reproduction in mixed mode. Data structure is the same as `species_category` | dict | `{species_id: {gender: [(row, col), ...]}}` |
