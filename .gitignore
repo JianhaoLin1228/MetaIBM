@@ -29,6 +29,7 @@ htmlcov/
 *.csv.gz
 *.jpg
 *.png
+*.gif
 
 # Local result folders
 results/
