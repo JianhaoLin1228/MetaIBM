@@ -1,5 +1,12 @@
 # MetaIBM v3.4.0
 
+----------------------------------------------------------------------------------------------------------------
+Online tutorial notebook is now available! Just run it in your browser — no installation required: 
+
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JianhaoLin1228/MetaIBM/v3.4.0?labpath=examples%2Fexample.ipynb)
+
+----------------------------------------------------------------------------------------------------------------
+
 **MetaIBM** is a Python-based individual-based / agent-based modelling package for simulating **metacommunity ecological and evolutionary dynamics** across multiple spatial scales. The package organizes the model into four core abstractions plus a top-level driver:
 
 - `individual` — the basic biological unit
