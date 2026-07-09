@@ -13,7 +13,7 @@ from .individual import individual
 
 
 class habitat():
-    def __init__(self, hab_name, hab_index, hab_location, num_env_types, env_types_name, mean_env_ls, var_env_ls, length, width, dormancy_pool_max_size):
+    def __init__(self, hab_name, hab_index, hab_location, num_env_types, env_types_name, mean_env_ls, var_env_ls, length, width, dormancy_pool_max_size=0):
         '''
         int num_env_types is the number of environment types in the habitat.
         env_types_name is the list of names of env_types.

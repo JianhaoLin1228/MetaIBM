@@ -55,7 +55,7 @@ Returns a dictionary aggregating data from all habitats in the patch. Each key i
 | `var_env_ls` | list of variance values for each environment type, length of the list = `num_env_types` |
 | `length` | number of rows in the habitat's microsite grid |
 | `width` | number of columns in the habitat's microsite grid |
-| `dormancy_pool_max_size` | maximum capacity of the habitat's dormancy pool |
+| `dormancy_pool_max_size` | maximum capacity of the habitat's dormancy pool; *optional*, default `0` (no dormancy) |
 
 **Returns:** `None`
 

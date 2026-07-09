@@ -171,7 +171,7 @@ Habitat is the local scales of the modelling system. In this grid-based model (F
 We can create an empty habitat by calling the *class* habitat() primitively defined in the MetaIBM library as below, 
 
 ```python
-metaIBM.habitat(hab_name, hab_index, hab_location, num_env_types, env_types_name, mean_env_ls, var_env_ls, length, width, dormancy_pool_max_size)
+metaIBM.habitat(hab_name, hab_index, hab_location, num_env_types, env_types_name, mean_env_ls, var_env_ls, length, width, dormancy_pool_max_size=0)
 ```
 
 **Returns** a habitat object with a set of unoccupied microsites.
@@ -197,8 +197,8 @@ length: int
 	the length of the habitat
 width: int
 	the width of the habitat
-dormancy_pool_max_size: int
-	the maximum capacity of the dormancy pool, i.e., the numbers of resting propagules that the dormancy pool in that habitat can hold. Note that when dormancy process is out of consideration, users can simply set dormancy_pool_max_size = 0.
+dormancy_pool_max_size: int, optional (default 0)
+	the maximum capacity of the dormancy pool, i.e., the numbers of resting propagules that the dormancy pool in that habitat can hold. Note that when dormancy process is out of consideration, users can simply set dormancy_pool_max_size = 0, or omit the argument entirely since it defaults to 0.
 ```
 
 **Examples:**
@@ -257,7 +257,7 @@ patch_location: tuple
 Then, you can add a habitat into the patch by calling the method *def* add_habitat() defined in *class* patch() as follow:
 
 ```python
-metaIBM.patch.add_habitat(hab_name, hab_index, hab_location, num_env_types, env_types_name, mean_env_ls, var_env_ls, length, width, dormancy_pool_max_size)
+metaIBM.patch.add_habitat(hab_name, hab_index, hab_location, num_env_types, env_types_name, mean_env_ls, var_env_ls, length, width, dormancy_pool_max_size=0)
 ```
 
 **The parameters** is the same as *class* habitat() in Section 3.1.1.
