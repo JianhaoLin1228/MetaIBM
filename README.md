@@ -1,9 +1,9 @@
-# MetaIBM v3.4.0
+# MetaIBM v3.4.1
 
 ----------------------------------------------------------------------------------------------------------------
 Online tutorial notebook is now available! Just run it in your browser — no installation required: 
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JianhaoLin1228/MetaIBM/v3.4.0?labpath=examples%2Fexample.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JianhaoLin1228/MetaIBM/v3.4.1?labpath=examples%2Fexample.ipynb)
 
 ----------------------------------------------------------------------------------------------------------------
 
@@ -19,8 +19,11 @@ MetaIBM adopts a package-oriented structure centered on the `metaibm` package an
 
 ---
 
-## Highlights in v3.4.0
+## Highlights in v3.4.1
 
+- The tutorial notebook `examples/example.ipynb` now runs a **100 time-step burn-in simulation in the mainland** before the metacommunity loop starts, so the mainland species pool accumulates standing genetic variation instead of starting from genetically identical founders.
+- The burn-in chains the same mainland-level processes as the main loop (selection → sexual reproduction with mutation → germination → pool clear-up), so propagule rains delivered to the islands already carry within-species phenotypic variance from time-step 0.
+- Online tutorial notebook runnable in the browser through Binder — no installation required.
 - New `metaibm/simulator.py` resolves a DSL-style schedule into Python calls on `metacommunity` objects, so users can write a model as a list of schedule items instead of hand-coding the time loop.
 - New `playgrounds/` directory for general and rookie users with a runnable reference model `playgrounds/model-simulator-GRFE.py` driven entirely by two CSV files.
 - New CSV-driven landscape API: `mainland.csv` (one row per species in the mainland) and `metacommunity_N=*_is_same_heterogeneity=*.csv` (one row per habitat in the islands), built into empty metacommunities by two schedule-callable simulator methods.
@@ -108,6 +111,9 @@ MetaIBM/
 │   ├── model-simulator-GRFE.py
 │   ├── mainland.csv
 │   └── metacommunity_N=*_is_same_heterogeneity=*.csv
+├── examples/
+│   ├── bootstrap_metaibm.py
+│   └── example.ipynb
 ├── test/
 │   ├── bootstrap_metaibm.py
 │   ├── test_simulator_user_freedom_and_contracts.py
@@ -160,6 +166,13 @@ Entry point for general and rookie users: schedule-and-CSV driven models that go
 - `mainland.csv` — one row per species; defines the mainland's species pool and per-species mainland habitat.
 - `metacommunity_N=*_is_same_heterogeneity=*.csv` — one row per habitat; defines the islands' patch / habitat layout and environment gradients (with `N` patches and same / different heterogeneity).
 
+#### `examples/`
+
+Tutorial material, runnable in the browser through the Binder badge at the top of this README.
+
+- `example.ipynb` — annotated end-to-end notebook: builds the mainland and the islands, runs a 100 time-step mainland burn-in to generate standing genetic variation, then runs the metacommunity loop (colonization → selection → reproduction → dispersal → germination → clear-up) and plots the results.
+- `bootstrap_metaibm.py` — ensures the project root is on `sys.path`.
+
 #### `test/`
 
 Standalone validation scripts (no pytest framework — run each directly).
@@ -208,7 +221,7 @@ from metaibm.simulator import simulator
 
 ## How imports work
 
-When running scripts inside `experiments/`, `playgrounds/`, or `test/`, the package import path is initialized by:
+When running scripts inside `experiments/`, `playgrounds/`, `examples/`, or `test/`, the package import path is initialized by:
 
 ```python
 import bootstrap_metaibm as _bootstrap
@@ -223,7 +236,7 @@ from metaibm.metacommunity import metacommunity
 from metaibm.simulator import simulator
 ```
 
-Each of `experiments/`, `playgrounds/`, and `test/` has its own copy of `bootstrap_metaibm.py`, so any script in those directories can be run from there directly.
+Each of `experiments/`, `playgrounds/`, `examples/`, and `test/` has its own copy of `bootstrap_metaibm.py`, so any script in those directories can be run from there directly.
 
 ---
 
@@ -309,7 +322,7 @@ For the simulator-driven workflow, see `playgrounds/model-simulator-GRFE.py` and
 
 ## Recommended import style
 
-For all new code in v3.4.0 and later, prefer direct package imports:
+For all new code in v3.4.1 and later, prefer direct package imports:
 
 ```python
 import bootstrap_metaibm as _bootstrap
@@ -328,15 +341,16 @@ This keeps experiment and playground scripts aligned with the package layout and
 
 - `docs-users/QUICK_START.md` — minimal walkthrough of the simulator + CSV workflow.
 - `docs-users/MetaIBM users manual.md` — full user manual.
-- `docs-users/MetaIBM_v3.4.0_release_notes_EN.md` — release notes for the current version (earlier versions also available).
+- `examples/example.ipynb` — annotated tutorial notebook (also runnable in the browser via the Binder badge at the top).
+- `docs-users/MetaIBM_v3.4.0_release_notes_EN.md` — most recent release notes file (earlier versions also available); the v3.4.1 changes are summarized in this README.
 - `docs-developer/metaibm-individual.md`, `metaibm-habitat.md`, `metaibm-patch.md`, `metaibm-metacommunity.md`, `metaibm-simulator.md`, `extension-global-habitat-network.md` — per-class API documentation.
 
 ---
 
 ## List of Versions History
 
-**MetaIBM v3.4.0**
-MetaIBM **v3.4.0** introduces `metaibm/simulator.py` as a schedule-driven top-level driver and a new `playgrounds/` directory for general and rookie users. Landscapes are now described by two CSV files (`mainland.csv` for the mainland species pool and `metacommunity.csv` for the islands' patch / habitat layout and environment gradients) and built by schedule-callable simulator methods. The user-facing boundary is documented executably in `test/test_simulator_user_freedom_and_contracts.py`. Legacy v3.3.1 tests are kept under `test/lecacy_v3.3.1/`. Also fixes a miscalculation of the expected number of sexual offspring.
+**MetaIBM v3.4.1**
+MetaIBM **v3.4.1** introduces `metaibm/simulator.py` as a schedule-driven top-level driver and a new `playgrounds/` directory for general and rookie users. Landscapes are now described by two CSV files (`mainland.csv` for the mainland species pool and `metacommunity.csv` for the islands' patch / habitat layout and environment gradients) and built by schedule-callable simulator methods. The user-facing boundary is documented executably in `test/test_simulator_user_freedom_and_contracts.py`. Legacy v3.3.1 tests are kept under `test/lecacy_v3.3.1/`. This version also ships the online tutorial notebook `examples/example.ipynb`, which now begins with a 100 time-step burn-in simulation in the mainland so the species pool carries standing genetic variation before colonization of the islands starts. Also fixes a miscalculation of the expected number of sexual offspring.
 
 **MetaIBM v3.3.1**
 MetaIBM **v3.3.1** updates `experiments/model-SLOSS-GREF.py` to read landscape layouts of patch and habitat in the simulated landscape. `patch_habitat_layouts.csv` is the values of patch and habitat X-Y location; `32x32_habitats_env1.csv` is the environmental gradients of env. axis 1; `32x32_habitats_env2.csv` is the environmental gradients of env. axis 2.
