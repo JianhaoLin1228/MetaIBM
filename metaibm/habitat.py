@@ -178,7 +178,19 @@ class habitat():
                 except:
                     continue
             return hab_pairwise_occupied_sites_pos_ls
-    
+
+    def sample_offspring_without_replacement(self, num, pool_name=('offspring_pool', )):
+        ''' Sample `num` offspring (individual_objs or offspring_markers) of this habitat
+        and REMOVE them from their source pool, then return a Python-list of sampled offspring (objs or markers).
+        pool_name could be ('offspring_pool', 'dormancy_pool') or ('offspring_marker_pool') '''
+
+        idx_ls = [(name, ObjOrMarker) for name in pool_name for ObjOrMarker in getattr(self, name)]
+        num = min(num, len(idx_ls))
+        picked_ls = random.sample(idx_ls, num)
+        for name, ObjOrMarker in picked_ls: 
+            getattr(self, name).remove(ObjOrMarker)
+        return [ObjOrMarker for _, ObjOrMarker in picked_ls]
+
     def hab_initialize(self, traits_num, pheno_names_ls, pheno_var_ls, geno_len_ls, reproduce_mode, species_2_phenotype_ls):
         mean_pheno_val_ls = self.mean_env_ls
         species_id = 'sp%d'%(species_2_phenotype_ls.index(mean_pheno_val_ls)+1)

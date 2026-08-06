@@ -339,7 +339,7 @@ class patch():
         habs_immigrants_matrix = self.get_habs_immigrants_matrix(disp_within_rate)
         return self.patch_matrix_around(np.minimum(habs_emigrants_matrix, habs_immigrants_matrix))
 
-    def patch_dipersal_within_from_offspring_and_dormancy_pool(self, disp_within_rate):
+    def patch_dipersal_within_from_offspring_and_dormancy_pool(self, disp_within_rate, is_remove):
         disp_within_num_matrix = self.get_dispersal_within_num_matrix(disp_within_rate)
         counter = 0
         for j in range(self.hab_num):
@@ -355,8 +355,8 @@ class patch():
                     continue
                 else:
                     migrants_i_j_num = int(disp_within_num_matrix[i, j])
-                    hab_i_offspring_and_dormancy_pool = h_i_object.offspring_pool + h_i_object.dormancy_pool
-                    migrants_to_j_indi_object_ls += random.sample(hab_i_offspring_and_dormancy_pool, migrants_i_j_num)
+                    if is_remove: migrants_to_j_indi_object_ls += h_i_object.sample_offspring_without_replacement(migrants_i_j_num, pool_name=('offspring_pool', 'dormancy_pool'))
+                    else: migrants_to_j_indi_object_ls += random.sample(h_i_object.offspring_pool + h_i_object.dormancy_pool, migrants_i_j_num)
                     
             random.shuffle(h_j_empty_site_ls)
             random.shuffle(migrants_to_j_indi_object_ls)
@@ -365,7 +365,7 @@ class patch():
                 counter += 1
         return counter
     
-    def patch_dispersal_within_from_offspring_marker_pool_to_immigrant_marker_pool(self, disp_within_rate):
+    def patch_dispersal_within_from_offspring_marker_pool_to_immigrant_marker_pool(self, disp_within_rate, is_remove):
         offspring_marker_dispersal_matrix =  self.patch_matrix_around(self.get_patch_habs_offspring_marker_num_matrix()*self.get_patch_dispersal_within_rate_matrix(disp_within_rate))
         counter = 0
         for j in range(self.hab_num):
@@ -380,15 +380,15 @@ class patch():
                     continue
                 else:
                     migrants_i_j_num = int(offspring_marker_dispersal_matrix[i, j])
-                    hab_i_offspring_marker_pool = h_i_object.offspring_marker_pool
-                    migrants_to_j_offspring_marker_ls += random.sample(hab_i_offspring_marker_pool, migrants_i_j_num)
+                    if is_remove: migrants_to_j_offspring_marker_ls += h_i_object.sample_offspring_without_replacement(migrants_i_j_num, pool_name=('offspring_marker_pool',))
+                    else: migrants_to_j_offspring_marker_ls += random.sample(h_i_object.offspring_marker_pool, migrants_i_j_num)
                     
             random.shuffle(migrants_to_j_offspring_marker_ls)
             h_j_object.immigrant_marker_pool += migrants_to_j_offspring_marker_ls
             counter += len(migrants_to_j_offspring_marker_ls)
         return counter
     
-    def patch_dispersal_within_from_offspring_pool_to_immigrant_pool(self, disp_within_rate):
+    def patch_dispersal_within_from_offspring_pool_to_immigrant_pool(self, disp_within_rate, is_remove):
         offspring_dispersal_matrix = self.patch_matrix_around(self.get_patch_habs_offspring_num_matrix()*self.get_patch_dispersal_within_rate_matrix(disp_within_rate))
         counter = 0
         for j in range(self.hab_num):
@@ -403,15 +403,15 @@ class patch():
                     continue
                 else:
                     migrants_i_j_num = int(offspring_dispersal_matrix[i, j])
-                    hab_i_offspring_pool = h_i_object.offspring_pool
-                    migrants_to_j_indi_object_ls += random.sample(hab_i_offspring_pool, migrants_i_j_num)
+                    if is_remove: migrants_to_j_indi_object_ls += h_i_object.sample_offspring_without_replacement(migrants_i_j_num)
+                    else: migrants_to_j_indi_object_ls += random.sample(h_i_object.offspring_pool, migrants_i_j_num)
                     
             random.shuffle(migrants_to_j_indi_object_ls)
             h_j_object.immigrant_pool += migrants_to_j_indi_object_ls
             counter += len(migrants_to_j_indi_object_ls)
         return counter
     
-    def patch_dispersal_within_from_offspring_pool_and_dormancy_pool_to_immigrant_pool(self, disp_within_rate):
+    def patch_dispersal_within_from_offspring_pool_and_dormancy_pool_to_immigrant_pool(self, disp_within_rate, is_remove):
         offspring_and_dormancy_dispersal_matrix =  self.patch_matrix_around(self.get_habs_emigrants_matrix(disp_within_rate))
         counter = 0
         for j in range(self.hab_num):
@@ -426,8 +426,8 @@ class patch():
                     continue
                 else:
                     migrants_i_j_num = int(offspring_and_dormancy_dispersal_matrix[i, j])
-                    hab_i_offspring_and_dormancy_pool = h_i_object.offspring_pool + h_i_object.dormancy_pool
-                    migrants_to_j_indi_object_ls += random.sample(hab_i_offspring_and_dormancy_pool, migrants_i_j_num)
+                    if is_remove: migrants_to_j_indi_object_ls += h_i_object.sample_offspring_without_replacement(migrants_i_j_num, pool_name=('offspring_pool', 'dormancy_pool'))
+                    else: migrants_to_j_indi_object_ls += random.sample(h_i_object.offspring_pool + h_i_object.dormancy_pool, migrants_i_j_num)
                     
             random.shuffle(migrants_to_j_indi_object_ls)
             h_j_object.immigrant_pool += migrants_to_j_indi_object_ls

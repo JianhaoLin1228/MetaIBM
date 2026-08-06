@@ -714,38 +714,38 @@ class metacommunity():
         return log_info
 
 #******************************************* dispersal within patch process ************************************************
-    def meta_dispersal_within_patch_from_offspring_marker_to_immigrant_marker_pool(self, disp_within_rate):
+    def meta_dispersal_within_patch_from_offspring_marker_to_immigrant_marker_pool(self, disp_within_rate, is_remove=False):
         ''' random dispersal within patch, offspring marker is the denotion of an dispering offspring to be born '''
         counter = 0
         for patch_id, patch_object in self.set.items():
-            counter += patch_object.patch_dispersal_within_from_offspring_marker_pool_to_immigrant_marker_pool(disp_within_rate)
+            counter += patch_object.patch_dispersal_within_from_offspring_marker_pool_to_immigrant_marker_pool(disp_within_rate, is_remove)
         log_info = '[Dispersal within process] in %s: there are %d offspring marker disperse into habs_immigrant_marker_pool within patches; there are %d offspring marker in the immigrant marker pool in the metacommunity \n'%(self.metacommunity_name, counter, self.meta_immigrant_marker_pool_marker_num())
         #print(log_info)
         return log_info
 
-    def meta_dispersal_within_patch_from_offspring_to_immigrant_pool(self, disp_within_rate):
+    def meta_dispersal_within_patch_from_offspring_to_immigrant_pool(self, disp_within_rate, is_remove=False):
         ''' random dispersal within patch '''
         counter = 0
         for patch_id, patch_object in self.set.items():
-            counter += patch_object.patch_dispersal_within_from_offspring_pool_to_immigrant_pool(disp_within_rate)
+            counter += patch_object.patch_dispersal_within_from_offspring_pool_to_immigrant_pool(disp_within_rate, is_remove)
         log_info = '[Dispersal within process] %s: there are %d individuals disperse into habs_immigrant_pool within patches; there are %d individuals in the immigrant pools in the metacommunity \n'%(self.metacommunity_name, counter, self.meta_immigrant_pool_individual_num())
         #print(log_info)
         return log_info
     
-    def meta_dispersal_within_patch_from_offspring_and_dormancy_to_immigrant_pool(self, disp_within_rate):
+    def meta_dispersal_within_patch_from_offspring_and_dormancy_to_immigrant_pool(self, disp_within_rate, is_remove=False):
         ''' random dispersal within patch '''
         counter = 0
         for patch_id, patch_object in self.set.items():
-            counter += patch_object.patch_dispersal_within_from_offspring_pool_and_dormancy_pool_to_immigrant_pool(disp_within_rate)
+            counter += patch_object.patch_dispersal_within_from_offspring_pool_and_dormancy_pool_to_immigrant_pool(disp_within_rate, is_remove)
         log_info = '[Dispersal within process] %s: there are %d individuals disperse into habs_immigrant_pool within patches; there are %d individuals in the immigrant pools in the metacommunity \n'%(self.metacommunity_name, counter, self.meta_immigrant_pool_individual_num())
         #print(log_info)
         return log_info        
 
-    def meta_dispersal_within_patch_from_offspring_and_dormancy_pool(self, disp_within_rate):
+    def meta_dispersal_within_patch_from_offspring_and_dormancy_pool(self, disp_within_rate, is_remove=False):
         ''' random dispersal within patch to empty sites directly'''
         counter = 0
         for patch_id, patch_object in self.set.items():
-            counter += patch_object.patch_dipersal_within_from_offspring_and_dormancy_pool(disp_within_rate)
+            counter += patch_object.patch_dipersal_within_from_offspring_and_dormancy_pool(disp_within_rate, is_remove)
             
         indi_num = self.get_meta_individual_num()
         empty_sites_num = self.show_meta_empty_sites_num()
