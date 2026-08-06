@@ -128,6 +128,16 @@ class patch():
             patch_offspring_and_dormancy_pool += h_object.offspring_pool
             patch_offspring_and_dormancy_pool += h_object.dormancy_pool
         return patch_offspring_and_dormancy_pool
+
+    def sample_offspring_without_replacement(self, num, pool_name=('offspring_pool', )):
+        ''' Sample `num` offspring (individual_objs or offspring_markers) across all habitats of this patch 
+        and REMOVE them from their source pool, then return a Python-list of sampled offspring (objs or markers).
+        pool_name could be ('offspring_pool', 'dormancy_pool') or ('offspring_marker_pool') '''
+        idx_ls = [(h_object, name, ObjOrMarker) for h_object in self.set.values() for name in pool_name for ObjOrMarker in getattr(h_object, name)]
+        picked_ls = random.sample(idx_ls, min(num, len(idx_ls)))
+        for h_object, name, ObjOrMarker in picked_ls: 
+            getattr(h_object, name).remove(ObjOrMarker)
+        return [ObjOrMarker for _, _, ObjOrMarker in picked_ls]
     
     def get_patch_microsites_individals_sp_id_values(self):
         ''' get species_id, phenotypes distribution in the patch as values set '''
