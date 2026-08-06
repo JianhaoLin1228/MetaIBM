@@ -339,7 +339,7 @@ class metacommunity():
         return log_info    
 #*******************************************************************************************************************#  
 #****************************************colonize_via_propagules_rains from mainland ********************************#  
-    def meta_colonize_from_propagules_rains(self, mainland_obj, propagules_rain_num):
+    def meta_colonize_from_propagules_rains(self, mainland_obj, propagules_rain_num, is_remove=False):
         mainland_occupied_sites_ls = mainland_obj.meta_get_occupied_location_ls()
         random.shuffle(mainland_occupied_sites_ls)
         
@@ -358,6 +358,7 @@ class metacommunity():
             propagules_patch_id, propagules_h_id, propagules_row_id, propagules_col_id =  propagules_rain_pos[0], propagules_rain_pos[1], propagules_rain_pos[2], propagules_rain_pos[3]
             patch_id, h_id, len_id, wid_id = meta_empty_pos[0], meta_empty_pos[1], meta_empty_pos[2], meta_empty_pos[3]
             indi_object = mainland_obj.set[propagules_patch_id].set[propagules_h_id].set['microsite_individuals'][propagules_row_id][propagules_col_id]
+            if is_remove: mainland_obj.set[propagules_patch_id].set[propagules_h_id].del_individual(len_id=propagules_row_id, wid_id=propagules_col_id)
             self.set[patch_id].set[h_id].add_individual(indi_object = indi_object, len_id=len_id, wid_id=wid_id)
             #self.set[patch_id].set[h_id].immigrant_pool.append(indi_object)
             counter += 1
@@ -367,7 +368,7 @@ class metacommunity():
         #print(log_info)
         return log_info            
         
-    def pairwise_sexual_colonization_from_prpagules_rains(self, mainland_obj, propagules_rain_num):
+    def pairwise_sexual_colonization_from_prpagules_rains(self, mainland_obj, propagules_rain_num, is_remove=False):
         mainland_pairwise_occupied_sites_ls = mainland_obj.get_meta_pairwise_occupied_sites_ls()
         random.shuffle(mainland_pairwise_occupied_sites_ls)
 
@@ -387,12 +388,14 @@ class metacommunity():
             
             female_propagules_patch_id, female_propagules_h_id, female_propagules_row_id, female_propagules_col_id =  female_obj_pos[0], female_obj_pos[1], female_obj_pos[2], female_obj_pos[3]
             female_obj = mainland_obj.set[female_propagules_patch_id].set[female_propagules_h_id].set['microsite_individuals'][female_propagules_row_id][female_propagules_col_id]
+            if is_remove: mainland_obj.set[female_propagules_patch_id].set[female_propagules_h_id].del_individual(len_id=female_propagules_row_id, wid_id=female_propagules_col_id)
             site_1_patch_id, site_1_h_id, site_1_len_id, site_1_wid_id = empty_site_1_pos[0], empty_site_1_pos[1], empty_site_1_pos[2], empty_site_1_pos[3]
             self.set[site_1_patch_id].set[site_1_h_id].add_individual(indi_object = female_obj, len_id=site_1_len_id, wid_id=site_1_wid_id)
             #self.set[site_1_patch_id].set[site_1_h_id].immigrant_pool.append(female_obj)
             
             male_propagules_patch_id, male_propagules_h_id, male_propagules_row_id, male_propagules_col_id =  male_obj_pos[0], male_obj_pos[1], male_obj_pos[2], male_obj_pos[3]
             male_obj = mainland_obj.set[male_propagules_patch_id].set[male_propagules_h_id].set['microsite_individuals'][male_propagules_row_id][male_propagules_col_id]
+            if is_remove: mainland_obj.set[male_propagules_patch_id].set[male_propagules_h_id].del_individual(len_id=male_propagules_row_id, wid_id=male_propagules_col_id)
             site_2_patch_id, site_2_h_id, site_2_len_id, site_2_wid_id = empty_site_2_pos[0], empty_site_2_pos[1], empty_site_2_pos[2], empty_site_2_pos[3]
             self.set[site_2_patch_id].set[site_2_h_id].add_individual(indi_object = male_obj, len_id=site_2_len_id, wid_id=site_2_wid_id)
             #self.set[site_2_patch_id].set[site_2_h_id].immigrant_pool.append(male_obj)
