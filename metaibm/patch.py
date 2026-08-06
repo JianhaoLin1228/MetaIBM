@@ -435,22 +435,22 @@ class patch():
         return counter        
         
 #******************** local germination in all habitat in the patch *****************************#
-    def patch_local_germinate_from_offspring_and_dormancy_pool(self):
+    def patch_local_germinate_from_offspring_and_dormancy_pool(self, is_remove):
         counter = 0
         for h_id, h_object in self.set.items():
-            counter += h_object.hab_local_germinate_from_offspring_and_dormancy_pool()
+            counter += h_object.hab_local_germinate_from_offspring_and_dormancy_pool(is_remove)
         return counter
     
-    def patch_local_germinate_from_offspring_and_immigrant_pool(self):
+    def patch_local_germinate_from_offspring_and_immigrant_pool(self, is_remove):
         counter = 0
         for h_id, h_object in self.set.items():
-            counter += h_object.hab_local_germinate_from_offspring_and_immigrant_pool()
+            counter += h_object.hab_local_germinate_from_offspring_and_immigrant_pool(is_remove)
         return counter
             
-    def patch_local_germinate_from_offspring_immigrant_and_dormancy_pool(self):
+    def patch_local_germinate_from_offspring_immigrant_and_dormancy_pool(self, is_remove):
         counter = 0
         for h_id, h_object in self.set.items():
-            counter += h_object.hab_local_germinate_from_offspring_immigrant_and_dormancy_pool()
+            counter += h_object.hab_local_germinate_from_offspring_immigrant_and_dormancy_pool(is_remove)
         return counter
 
 #********************************** dormancy process in the patch **********************************

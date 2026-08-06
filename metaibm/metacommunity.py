@@ -753,51 +753,53 @@ class metacommunity():
         #print(log_info)
         return log_info
 #************************************************ local germination *******************************************************************
-    def meta_local_germinate_from_offspring_and_dormancy_pool(self):
+    def meta_local_germinate_from_offspring_and_dormancy_pool(self, is_remove=False):
         ''' germination individual randomly chosen from local habitst offspring pool + dormancy_pool '''
         counter = 0
         for patch_id, patch_object in self.set.items():
-            counter += patch_object.patch_local_germinate_from_offspring_and_dormancy_pool()
+            counter += patch_object.patch_local_germinate_from_offspring_and_dormancy_pool(is_remove)
         indi_num = self.get_meta_individual_num()
         empty_sites_num = self.show_meta_empty_sites_num()
         log_info = '%s: there are %d individuals germinating from local offspring_pool and dormancy_pool in the local habitat; there are %d individuals in the metacommunity; there are %d empty sites in the metacommunity \n'%(self.metacommunity_name, counter, indi_num, empty_sites_num)
         #print(log_info)
         return log_info
     
-    def meta_local_germinate_from_offspring_and_immigrant_pool(self):
+    def meta_local_germinate_from_offspring_and_immigrant_pool(self, is_remove=False):
         ''' germination individual randomly chosen from local habitst offspring pool + immigrant_pool '''
         counter = 0
         for patch_id, patch_object in self.set.items():
-            counter += patch_object.patch_local_germinate_from_offspring_and_immigrant_pool()
+            counter += patch_object.patch_local_germinate_from_offspring_and_immigrant_pool(is_remove)
         indi_num = self.get_meta_individual_num()
         empty_sites_num = self.show_meta_empty_sites_num()
         log_info = '[Germination process] in %s: there are %d individuals germinating from local offspring_pool and immigrant_pool in the local habitat; there are %d individuals in the metacommunity; there are %d empty sites in the metacommunity \n'%(self.metacommunity_name, counter, indi_num, empty_sites_num)
         #print(log_info)
         return log_info
     
-    def meta_local_germinate_from_offspring_immigrant_and_dormancy_pool(self):
+    def meta_local_germinate_from_offspring_immigrant_and_dormancy_pool(self, is_remove=False):
         ''' germination individual randomly chosen from local habitst offspring pool + immigrant_pool + dormancy_pool '''
         counter = 0
         for patch_id, patch_object in self.set.items():
-            counter += patch_object.patch_local_germinate_from_offspring_immigrant_and_dormancy_pool()
+            counter += patch_object.patch_local_germinate_from_offspring_immigrant_and_dormancy_pool(is_remove)
         indi_num = self.get_meta_individual_num()
         empty_sites_num = self.show_meta_empty_sites_num()
         log_info = '[Germination process] %s: there are %d individuals germinating from local offspring_pool and dormancy_pool and immigrant_pool in the local habitat; there are %d individuals in the metacommunity; there are %d empty sites in the metacommunity \n'%(self.metacommunity_name, counter, indi_num, empty_sites_num)
         #print(log_info)
         return log_info
     
-    def meta_local_germinate_and_birth_from_offspring_marker_and_immigrant_marker_pool(self, mutation_rate, pheno_var_ls):
+    def meta_local_germinate_and_birth_from_offspring_marker_and_immigrant_marker_pool(self, mutation_rate, pheno_var_ls, is_remove=False):
         ''' germination individual marker randomly chosen from local habitst offspring pool + immigrant_pool and then birth process according to the marker information '''
         counter = 0
         for patch_id, patch_object in self.set.items():
             for h_id, h_object in patch_object.set.items():
                 hab_empty_pos_ls = h_object.empty_site_pos_ls
                 hab_offspring_marker_and_immigrant_marker_pool = h_object.offspring_marker_pool + h_object.immigrant_marker_pool
+                hab_offspring_marker_and_immigrant_marker_labels = ['offspring_marker_pool']*len(h_object.offspring_marker_pool) + ['immigrant_marker_pool']*len(h_object.immigrant_marker_pool)
+                hab_offspring_marker_and_immigrant_marker_pool_with_labels = list(zip(hab_offspring_marker_and_immigrant_marker_pool, hab_offspring_marker_and_immigrant_marker_labels))
                 
                 random.shuffle(hab_empty_pos_ls)
-                random.shuffle(hab_offspring_marker_and_immigrant_marker_pool)
+                random.shuffle(hab_offspring_marker_and_immigrant_marker_pool_with_labels)
                 
-                for (row_id, col_id), indi_marker in list(zip(hab_empty_pos_ls, hab_offspring_marker_and_immigrant_marker_pool)):
+                for (row_id, col_id), (indi_marker, pool_label) in list(zip(hab_empty_pos_ls, hab_offspring_marker_and_immigrant_marker_pool_with_labels)):
                     birth_patch_id, birth_h_id, reproduce_mode = indi_marker[0], indi_marker[1], indi_marker[2]
                     birth_h_object = self.set[birth_patch_id].set[birth_h_id]  # birth place h_object
                     
@@ -811,6 +813,7 @@ class metacommunity():
                         indi_object = birth_h_object.hab_mix_sex_reproduce_mutate_with_num(mutation_rate, pheno_var_ls, num=1)[0]
                     
                     h_object.add_individual(indi_object=indi_object, len_id=row_id, wid_id=col_id)
+                    if is_remove: getattr(h_object, pool_label).remove(indi_marker)
                     counter += 1
         indi_num = self.get_meta_individual_num()
         empty_sites_num = self.show_meta_empty_sites_num()

@@ -605,42 +605,48 @@ class habitat():
         return len(self.offspring_pool)
 
 #*********************************** local germination processes ************************************************
-    def hab_local_germinate_from_offspring_and_dormancy_pool(self):
+    def hab_local_germinate_from_offspring_and_dormancy_pool(self, is_remove):
         hab_empty_pos_ls = self.empty_site_pos_ls
-        hab_offspring_and_dormancy_pool = self.offspring_pool + self.dormancy_pool
+        hab_offspring_and_dormancy_pool_with_labels = list(zip(self.offspring_pool + self.dormancy_pool, 
+                                            ['offspring_pool']*len(self.offspring_pool) + ['dormancy_pool']*len(self.dormancy_pool)))
         
         random.shuffle(hab_empty_pos_ls)
-        random.shuffle(hab_offspring_and_dormancy_pool)
+        random.shuffle(hab_offspring_and_dormancy_pool_with_labels)
         
         counter = 0
-        for (row_id, col_id), indi_object in list(zip(hab_empty_pos_ls, hab_offspring_and_dormancy_pool)):
+        for (row_id, col_id), (indi_object, pool_label) in list(zip(hab_empty_pos_ls, hab_offspring_and_dormancy_pool_with_labels)):
             self.add_individual(indi_object=indi_object, len_id=row_id, wid_id=col_id)
+            if is_remove: getattr(self, pool_label).remove(indi_object)
             counter += 1
         return counter
     
-    def hab_local_germinate_from_offspring_and_immigrant_pool(self):
+    def hab_local_germinate_from_offspring_and_immigrant_pool(self, is_remove):
         hab_empty_pos_ls = self.empty_site_pos_ls
-        hab_offspring_and_immigrant_pool = self.offspring_pool + self.immigrant_pool
+        hab_offspring_and_immigrant_pool_with_labels = list(zip(self.offspring_pool + self.immigrant_pool, 
+                                            ['offspring_pool']*len(self.offspring_pool) + ['immigrant_pool']*len(self.immigrant_pool)))
         
         random.shuffle(hab_empty_pos_ls)
-        random.shuffle(hab_offspring_and_immigrant_pool)
+        random.shuffle(hab_offspring_and_immigrant_pool_with_labels)
         
         counter = 0
-        for (row_id, col_id), indi_object in list(zip(hab_empty_pos_ls, hab_offspring_and_immigrant_pool)):
+        for (row_id, col_id), (indi_object, pool_label) in list(zip(hab_empty_pos_ls, hab_offspring_and_immigrant_pool_with_labels)):
             self.add_individual(indi_object=indi_object, len_id=row_id, wid_id=col_id)
+            if is_remove: getattr(self, pool_label).remove(indi_object)
             counter += 1
         return counter
         
-    def hab_local_germinate_from_offspring_immigrant_and_dormancy_pool(self):
+    def hab_local_germinate_from_offspring_immigrant_and_dormancy_pool(self, is_remove):
         hab_empty_pos_ls = self.empty_site_pos_ls
-        offspring_immigrant_and_dormancy_pool = self.offspring_pool + self.immigrant_pool + self.dormancy_pool
-        
+        offspring_immigrant_and_dormancy_pool_with_labels = list(zip(self.offspring_pool + self.immigrant_pool + self.dormancy_pool, 
+                                                ['offspring_pool']*len(self.offspring_pool) + ['immigrant_pool']*len(self.immigrant_pool) + ['dormancy_pool']*len(self.dormancy_pool)))
+
         random.shuffle(hab_empty_pos_ls)
-        random.shuffle(offspring_immigrant_and_dormancy_pool)
+        random.shuffle(offspring_immigrant_and_dormancy_pool_with_labels)
         
         counter = 0
-        for (row_id, col_id), indi_object in list(zip(hab_empty_pos_ls, offspring_immigrant_and_dormancy_pool)):
+        for (row_id, col_id), (indi_object, pool_label) in list(zip(hab_empty_pos_ls, offspring_immigrant_and_dormancy_pool_with_labels)):
             self.add_individual(indi_object=indi_object, len_id=row_id, wid_id=col_id)
+            if is_remove: getattr(self, pool_label).remove(indi_object)
             counter += 1
         return counter
     
