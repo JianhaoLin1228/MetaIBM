@@ -587,7 +587,7 @@ class metacommunity():
         emigrants_matrix = self.get_emigrants_matrix(total_disp_among_rate, method=method, **kwargs)
         return self.matrix_around(np.minimum(emigrants_matrix, immigrants_matrix))
 
-    def dispersal_among_patches_from_offspring_pool_and_dormancy_pool(self, total_disp_among_rate, method='uniform', **kwargs):
+    def dispersal_among_patches_from_offspring_pool_and_dormancy_pool(self, total_disp_among_rate, method='uniform', is_remove=False, **kwargs):
         ''' dispersal from patch_i to patch_j (directly into the microsites) '''
         if self.patch_num < 2:
             log_info = '[Dispersal among patches] in %s: patch_num < 2, there are 0 individuals disperse among patches \n'
@@ -608,8 +608,8 @@ class metacommunity():
                     continue
                 else:
                     migrants_i_j_num = int(dispersal_among_num_matrix[i, j])
-                    patch_i_offspring_and_dormancy_pool = patch_i_object.get_patch_offspring_and_dormancy_pool()
-                    migrants_to_j_indi_object_ls += random.sample(patch_i_offspring_and_dormancy_pool, migrants_i_j_num)
+                    if is_remove: migrants_to_j_indi_object_ls += patch_i_object.sample_offspring_without_replacement(migrants_i_j_num, pool_name=('offspring_pool', 'dormancy_pool'))
+                    else: migrants_to_j_indi_object_ls += random.sample(patch_i_object.get_patch_offspring_and_dormancy_pool(), migrants_i_j_num)
                     
             random.shuffle(patch_j_empty_site_ls)
             random.shuffle(migrants_to_j_indi_object_ls)
@@ -622,7 +622,7 @@ class metacommunity():
         #print(log_info)
         return log_info
     
-    def dispersal_aomng_patches_from_offspring_pool_to_immigrant_pool(self, total_disp_among_rate, method='uniform', **kwargs):
+    def dispersal_aomng_patches_from_offspring_pool_to_immigrant_pool(self, total_disp_among_rate, method='uniform', is_remove=False, **kwargs):
         ''' exchange between offspring pools among patches into immigrant pool'''
         if self.patch_num < 2:
             log_info = '[Dispersal among patches] in %s: patch_num < 2, there are 0 individuals disperse into habs_immigrant_pool among patches \n'
@@ -642,8 +642,8 @@ class metacommunity():
                     continue
                 else:
                     migrants_i_j_num = int(offspring_dispersal_matrix[i, j])
-                    patch_i_offspring_pool = patch_i_object.get_patch_offspring_pool()
-                    migrants_to_j_indi_object_ls += random.sample(patch_i_offspring_pool, migrants_i_j_num)
+                    if is_remove: migrants_to_j_indi_object_ls += patch_i_object.sample_offspring_without_replacement(migrants_i_j_num)
+                    else: migrants_to_j_indi_object_ls += random.sample(patch_i_object.get_patch_offspring_pool(), migrants_i_j_num)
                     
             random.shuffle(migrants_to_j_indi_object_ls)
             patch_j_object.migrants_to_patch_into_habs_immigrant_pool(migrants_to_j_indi_object_ls)
@@ -652,7 +652,7 @@ class metacommunity():
         #print(log_info)
         return log_info
     
-    def dispersal_aomng_patches_from_offspring_marker_pool_to_immigrant_marker_pool(self, total_disp_among_rate, method='uniform', **kwargs):
+    def dispersal_aomng_patches_from_offspring_marker_pool_to_immigrant_marker_pool(self, total_disp_among_rate, method='uniform', is_remove=False, **kwargs):
         ''' exchange between offspring marker pools among patches into immigrant marker pool '''
         if self.patch_num < 2:
             log_info = '[Dispersal among patches] in %s: patch_num < 2, there are 0 individuals disperse into habs_immigrant_marker_pool among patches \n'
@@ -673,8 +673,8 @@ class metacommunity():
                     continue
                 else:
                     migrants_i_j_num = int(offspring_marker_dispersal_matrix[i, j])
-                    patch_i_offspring_marker_pool = patch_i_object.get_patch_offspring_marker_pool()
-                    migrants_to_j_offspring_marker_ls += random.sample(patch_i_offspring_marker_pool, migrants_i_j_num)
+                    if is_remove: migrants_to_j_offspring_marker_ls += patch_i_object.sample_offspring_without_replacement(migrants_i_j_num, pool_name=('offspring_marker_pool',))
+                    else: migrants_to_j_offspring_marker_ls += random.sample(patch_i_object.get_patch_offspring_marker_pool(), migrants_i_j_num)
                     
             random.shuffle(migrants_to_j_offspring_marker_ls)
             patch_j_object.migrants_marker_to_patch_into_habs_immigrant_marker_pool(migrants_to_j_offspring_marker_ls)
@@ -683,7 +683,7 @@ class metacommunity():
         #print(log_info)
         return log_info
 
-    def dispersal_among_patches_from_offsrping_pool_and_dormancy_pool_to_immigrant_pool(self, total_disp_among_rate, method='uniform', **kwargs):
+    def dispersal_among_patches_from_offsrping_pool_and_dormancy_pool_to_immigrant_pool(self, total_disp_among_rate, method='uniform', is_remove=False, **kwargs):
         ''' exchange between offspring pools and dormancy among patches into immigrant pool'''
         if self.patch_num < 2:
             log_info = '[Dispersal among patches] in %s: patch_num < 2, there are 0 individuals disperse into habs_immigrant_pool among patches \n'
@@ -703,8 +703,8 @@ class metacommunity():
                     continue
                 else:
                     migrants_i_j_num = int(offspring_dormancy_dispersal_matrix[i, j])
-                    patch_i_offspring_and_dormancy_pool = patch_i_object.get_patch_offspring_and_dormancy_pool()
-                    migrants_to_j_indi_object_ls += random.sample(patch_i_offspring_and_dormancy_pool, migrants_i_j_num)
+                    if is_remove: migrants_to_j_indi_object_ls += patch_i_object.sample_offspring_without_replacement(migrants_i_j_num, pool_name=('offspring_pool', 'dormancy_pool'))
+                    else: migrants_to_j_indi_object_ls += random.sample(patch_i_object.get_patch_offspring_and_dormancy_pool(), migrants_i_j_num)
                     
             random.shuffle(migrants_to_j_indi_object_ls)
             patch_j_object.migrants_to_patch_into_habs_immigrant_pool(migrants_to_j_indi_object_ls)
