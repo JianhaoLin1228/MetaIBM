@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Split from metacommunity_IBM.py.
-Compatibility-preserving class module.
+ATTENTION: 
+1. Do NOT give this class individual() an _eq__ -- keep Python's default one (identity comparison).
 """
 
 import numpy as np
