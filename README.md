@@ -1,9 +1,9 @@
-# MetaIBM v3.4.1
+# MetaIBM v3.4.2
 
 ----------------------------------------------------------------------------------------------------------------
 Online tutorial notebook is now available! Just run it in your browser — no installation required: 
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JianhaoLin1228/MetaIBM/v3.4.1?labpath=examples%2Fexample.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JianhaoLin1228/MetaIBM/v3.4.2?labpath=examples%2Fexample.ipynb)
 
 ----------------------------------------------------------------------------------------------------------------
 
@@ -19,18 +19,15 @@ MetaIBM adopts a package-oriented structure centered on the `metaibm` package an
 
 ---
 
-## Highlights in v3.4.1
+## Highlights in v3.4.2
 
-- The tutorial notebook `examples/example.ipynb` now runs a **100 time-step burn-in simulation in the mainland** before the metacommunity loop starts, so the mainland species pool accumulates standing genetic variation instead of starting from genetically identical founders.
-- The burn-in chains the same mainland-level processes as the main loop (selection → sexual reproduction with mutation → germination → pool clear-up), so propagule rains delivered to the islands already carry within-species phenotypic variance from time-step 0.
-- Online tutorial notebook runnable in the browser through Binder — no installation required.
-- New `metaibm/simulator.py` resolves a DSL-style schedule into Python calls on `metacommunity` objects, so users can write a model as a list of schedule items instead of hand-coding the time loop.
-- New `playgrounds/` directory for general and rookie users with a runnable reference model `playgrounds/model-simulator-GRFE.py` driven entirely by two CSV files.
-- New CSV-driven landscape API: `mainland.csv` (one row per species in the mainland) and `metacommunity_N=*_is_same_heterogeneity=*.csv` (one row per habitat in the islands), built into empty metacommunities by two schedule-callable simulator methods.
-- New executable user-contract documentation at `test/test_simulator_user_freedom_and_contracts.py`, listing which inputs general users are free to vary and which conventions they must keep stable.
-- Legacy v3.1.0–v3.3.0 tests live under `test/lecacy_v3.1.0-v3.3.0/`; legacy v3.3.1 tests live under `test/lecacy_v3.3.1/`.
-- Documentation reorganized into `docs-users/` (user manual, quick start, release notes) and `docs-developer/` (per-class API docs).
-- Fixes a miscalculation of the expected number of sexual offspring.
+- **Fixes an object-reference (aliasing) problem** in dispersal, colonization from the mainland, and local germination. Before v3.4.2 these processes only *read* from their source pools without ever removing what they took, so the very same `individual` object (or the same offspring marker) could be taken by several processes within one time-step and end up **referenced from more than one microsite at once**, or exist in a source pool and in an occupied microsite at the same time. Because a microsite stores a *reference* rather than a copy, every such duplicate aged, mutated and died as one and the same organism.
+- **New `is_remove` switch (default `False`)** on every affected metacommunity-level process. With `is_remove=True` the process samples **without replacement**: whatever is dispersed, germinated, or shipped from the mainland is deleted from its source pool (or from its mainland microsite), so each `individual` object / offspring marker is consumed exactly once per time-step.
+- `is_remove` is available on colonization from the mainland (`meta_colonize_from_propagules_rains`, `pairwise_sexual_colonization_from_prpagules_rains`), on all four dispersal-among-patches methods, on all four dispersal-within-patch methods, and on all four local-germination methods (three object-pipeline entries + the marker-pipeline entry).
+- **New sampling helper `sample_offspring_without_replacement(num, pool_name)`** on both `habitat` and `patch`. It samples across one or several pools at once (`('offspring_pool',)`, `('offspring_pool', 'dormancy_pool')`, or `('offspring_marker_pool',)`), removes each pick from the pool it actually came from, and returns the picked objects / markers. It caps the sample size at the pool size, so on the `is_remove=True` path an over-large dispersal number returns everything available instead of raising `ValueError`; the legacy `is_remove=False` path still calls `random.sample()` directly and is unchanged in this respect.
+- **Backward compatible by default.** `is_remove=False` keeps exactly the v3.4.1 sampling behaviour, so existing model scripts and published results are unaffected unless the flag is switched on explicitly.
+- `individual` must keep Python's default identity-based equality: the class deliberately defines **no `__eq__`**, because the removal step relies on `list.remove()` deleting the one object that was actually sampled rather than the first value-equal individual in the pool. This constraint is now recorded at the top of `metaibm/individual.py`.
+- **Not yet covered:** the two dispersal methods of the global-habitat-network extension (`extension/global_habitat_network.py`) still sample with `random.sample()` without removal and take no `is_remove` argument.
 
 ---
 
@@ -342,12 +339,15 @@ This keeps experiment and playground scripts aligned with the package layout and
 - `docs-users/QUICK_START.md` — minimal walkthrough of the simulator + CSV workflow.
 - `docs-users/MetaIBM users manual.md` — full user manual.
 - `examples/example.ipynb` — annotated tutorial notebook (also runnable in the browser via the Binder badge at the top).
-- `docs-users/MetaIBM_v3.4.0_release_notes_EN.md` — most recent release notes file (earlier versions also available); the v3.4.1 changes are summarized in this README.
+- `docs-users/MetaIBM_v3.4.0_release_notes_EN.md` — most recent release notes file (earlier versions also available); the v3.4.1 and v3.4.2 changes are summarized in this README.
 - `docs-developer/metaibm-individual.md`, `metaibm-habitat.md`, `metaibm-patch.md`, `metaibm-metacommunity.md`, `metaibm-simulator.md`, `extension-global-habitat-network.md` — per-class API documentation.
 
 ---
 
 ## List of Versions History
+
+**MetaIBM v3.4.2**
+MetaIBM **v3.4.2** fixes an object-reference (aliasing) problem in dispersal, colonization from the mainland, and local germination: because these processes sampled from their source pools without removing what they took, one and the same `individual` object (or offspring marker) could end up referenced from several microsites, or from a pool and a microsite simultaneously. Every affected process now takes an `is_remove` argument (default `False`, so v3.4.1 behaviour is preserved); with `is_remove=True` the process samples without replacement and deletes each pick from its source pool or mainland microsite. Two new helpers, `habitat.sample_offspring_without_replacement()` and `patch.sample_offspring_without_replacement()`, implement the multi-pool sampling-and-removal step. The `individual` class deliberately keeps Python's default identity-based equality (no `__eq__`), which the removal step depends on.
 
 **MetaIBM v3.4.1**
 MetaIBM **v3.4.1** introduces `metaibm/simulator.py` as a schedule-driven top-level driver and a new `playgrounds/` directory for general and rookie users. Landscapes are now described by two CSV files (`mainland.csv` for the mainland species pool and `metacommunity.csv` for the islands' patch / habitat layout and environment gradients) and built by schedule-callable simulator methods. The user-facing boundary is documented executably in `test/test_simulator_user_freedom_and_contracts.py`. Legacy v3.3.1 tests are kept under `test/lecacy_v3.3.1/`. This version also ships the online tutorial notebook `examples/example.ipynb`, which now begins with a 100 time-step burn-in simulation in the mainland so the species pool carries standing genetic variation before colonization of the islands starts. Also fixes a miscalculation of the expected number of sexual offspring.
@@ -369,6 +369,19 @@ MetaIBM **v3.1.0** adopts a **package-oriented structure** centered on the `meta
 
 
 ## List of Highlights in History
+
+## Highlights in v3.4.1
+
+- The tutorial notebook `examples/example.ipynb` now runs a **100 time-step burn-in simulation in the mainland** before the metacommunity loop starts, so the mainland species pool accumulates standing genetic variation instead of starting from genetically identical founders.
+- The burn-in chains the same mainland-level processes as the main loop (selection → sexual reproduction with mutation → germination → pool clear-up), so propagule rains delivered to the islands already carry within-species phenotypic variance from time-step 0.
+- Online tutorial notebook runnable in the browser through Binder — no installation required.
+- New `metaibm/simulator.py` resolves a DSL-style schedule into Python calls on `metacommunity` objects, so users can write a model as a list of schedule items instead of hand-coding the time loop.
+- New `playgrounds/` directory for general and rookie users with a runnable reference model `playgrounds/model-simulator-GRFE.py` driven entirely by two CSV files.
+- New CSV-driven landscape API: `mainland.csv` (one row per species in the mainland) and `metacommunity_N=*_is_same_heterogeneity=*.csv` (one row per habitat in the islands), built into empty metacommunities by two schedule-callable simulator methods.
+- New executable user-contract documentation at `test/test_simulator_user_freedom_and_contracts.py`, listing which inputs general users are free to vary and which conventions they must keep stable.
+- Legacy v3.1.0–v3.3.0 tests live under `test/lecacy_v3.1.0-v3.3.0/`; legacy v3.3.1 tests live under `test/lecacy_v3.3.1/`.
+- Documentation reorganized into `docs-users/` (user manual, quick start, release notes) and `docs-developer/` (per-class API docs).
+- Fixes a miscalculation of the expected number of sexual offspring.
 
 ## Highlights in v3.3.1
 

@@ -186,6 +186,28 @@ Returns a list of environment values at a specific microsite `(len_id, wid_id)`,
 
 ---
 
+#### `sample_offspring_without_replacement`
+
+*New in v3.4.2.*
+
+**Parameters:**
+
+| Parameter | Description |
+|-----------|-------------|
+| `self` | self |
+| `num` | int; number of offspring (`individual` objects or offspring markers) to sample |
+| `pool_name` | tuple of pool attribute names to sample from; default `('offspring_pool', )`. Also used as `('offspring_pool', 'dormancy_pool')` and `('offspring_marker_pool', )` |
+
+**Returns:** `list` of sampled `individual` objects or offspring markers
+
+**Description:**
+
+Samples `num` items **without replacement** from the union of the listed pools of this habitat and **removes each pick from the pool it actually came from**, then returns the picked objects / markers. Each candidate is tagged with its source pool name before sampling, so a pick taken from `dormancy_pool` is never deleted from `offspring_pool` by mistake. The sample size is capped at `min(num, pool size)`, so requesting more than the pool holds returns everything available instead of raising `ValueError`.
+
+This is the sampling primitive behind `is_remove=True` in the within-patch dispersal methods; the removal step relies on `list.remove()` and therefore on `individual` keeping Python's default identity-based equality (see `docs-developer/metaibm-individual.md`).
+
+---
+
 ### Initialization
 
 #### `hab_initialize`
@@ -596,12 +618,15 @@ Creates both asexual offspring (from high-fitness parents) and sexual offspring 
 | Parameter | Description |
 |-----------|-------------|
 | `self` | self |
+| `is_remove` | bool; *new in v3.4.2*. If `True`, every germinated individual is removed from the pool it came from. Passed down from the metacommunity level, where it defaults to `False` |
 
 **Returns:** `int` (counter)
 
 **Description:**
 
 Places individuals from both `offspring_pool` and `dormancy_pool` into empty microsites. Combines both pools, randomly shuffles both empty sites and candidate individuals, then matches them by position. Returns the count of successfully germinated individuals.
+
+Since v3.4.2 each candidate is carried together with the name of its source pool, so that when `is_remove=True` the germinated individual is deleted from the correct pool (`offspring_pool` or `dormancy_pool`). With `is_remove=False` (the default) the individual stays in its pool after being placed into a microsite, which means the same `individual` object is referenced from both the pool and the microsite until the pools are cleared.
 
 ---
 
@@ -612,12 +637,13 @@ Places individuals from both `offspring_pool` and `dormancy_pool` into empty mic
 | Parameter | Description |
 |-----------|-------------|
 | `self` | self |
+| `is_remove` | bool; *new in v3.4.2*. If `True`, every germinated individual is removed from `offspring_pool` or `immigrant_pool`, whichever it came from |
 
 **Returns:** `int` (counter)
 
 **Description:**
 
-Places individuals from both `offspring_pool` and `immigrant_pool` into empty microsites. Combines both pools, randomly shuffles, and matches to empty sites. Returns the count of successfully germinated individuals.
+Places individuals from both `offspring_pool` and `immigrant_pool` into empty microsites. Combines both pools, randomly shuffles, and matches to empty sites. Returns the count of successfully germinated individuals. Since v3.4.2 each candidate carries the name of its source pool so that `is_remove=True` deletes it from the right one.
 
 ---
 
@@ -628,12 +654,13 @@ Places individuals from both `offspring_pool` and `immigrant_pool` into empty mi
 | Parameter | Description |
 |-----------|-------------|
 | `self` | self |
+| `is_remove` | bool; *new in v3.4.2*. If `True`, every germinated individual is removed from `offspring_pool`, `immigrant_pool` or `dormancy_pool`, whichever it came from |
 
 **Returns:** `int` (counter)
 
 **Description:**
 
-Places individuals from all three pools (`offspring_pool`, `immigrant_pool`, `dormancy_pool`) into empty microsites. The most comprehensive germination method. Returns the count of successfully germinated individuals.
+Places individuals from all three pools (`offspring_pool`, `immigrant_pool`, `dormancy_pool`) into empty microsites. The most comprehensive germination method. Returns the count of successfully germinated individuals. Since v3.4.2 each candidate carries the name of its source pool so that `is_remove=True` deletes it from the right one.
 
 ---
 

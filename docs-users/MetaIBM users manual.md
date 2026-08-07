@@ -678,7 +678,7 @@ After that, we can generate the unoccupied metacommunity by calling the function
 In the sub-model of colonization process, we assumed that the species colonize the empty grids in the metacommunity from the mainland via **propagules’ rains**. In the software, we randomly pick the propagules from the mainland to the metacommunity by **sampling with replacement**. To do so, we can call the primitive functions, as follow, 
 
 ```python
-metaIBM.meta_colonize_from_propagules_rains(mainland_obj, propagules_rain_num)
+metaIBM.meta_colonize_from_propagules_rains(mainland_obj, propagules_rain_num, is_remove=False)
 ```
 
 **Returns** Strings, the information of colonization process
@@ -690,6 +690,12 @@ mainland_obj: a mainland object
 	an object we have defined as a mainland. See Section 3.4.1
 propagules_rain_num: int
 	the number of propagules disperse from mainland to the metacommunity by propagules’ rains.
+is_remove: bool, default False (since v3.4.2)
+	whether a propagule leaves the mainland when it colonizes the metacommunity. A colonist is placed into
+	the metacommunity by reference, not copied, so with is_remove=False the same individual object occupies
+	a mainland microsite and a metacommunity microsite at the same time (sampling with replacement, the
+	behaviour of all versions before v3.4.2). With is_remove=True the individual is deleted from its mainland
+	microsite as it colonizes, i.e. sampling without replacement.
 ```
 
 Note that, when modelling in the **sexual reproduction mode**, we recommend to call the function as follow,
@@ -910,7 +916,7 @@ Within a patch, we assume that each two habitats within the patch are of the sam
 Users can simulate the dispersal among patches process by calling the method below, 
 
 ```python
-metaIBM.meta_dispersal_within_patch_from_offspring_to_immigrant_pool(disp_within_rate)
+metaIBM.meta_dispersal_within_patch_from_offspring_to_immigrant_pool(disp_within_rate, is_remove=False)
 ```
 
 When we are conducting this function, the propagules disperse from metaIBM.habitat.offspring_pool of a habitat to metaIBM.habitat.immigrant_pool the other habitat in the same patch.
@@ -922,6 +928,12 @@ When we are conducting this function, the propagules disperse from metaIBM.habit
 ```
 disp_within_rate: float
 	dispersal rate within a patch, the proportion of propagules the proportion of propagules leaving a habitat to the other habitat in the same patch
+is_remove: bool, default False (since v3.4.2)
+	whether a dispersing propagule leaves its source offspring_pool. With is_remove=False the propagule is
+	copied by reference into the target habitat's immigrant_pool but also stays in the source pool, so the
+	same individual object can be dispersed several times and still germinate at home (the behaviour of all
+	versions before v3.4.2). With is_remove=True the propagule is removed from the source pool, i.e. sampling
+	without replacement.
 ```
 
 **Examples:**

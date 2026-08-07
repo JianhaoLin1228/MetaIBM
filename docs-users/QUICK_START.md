@@ -227,6 +227,19 @@ Inside `params`, any string value beginning with `'@'` is replaced at dispatch t
 
 The lookup is done by `simulator._resolve_value` and recurses into lists, tuples, and dicts, so `'@mainland'` can appear at any depth inside a params value.
 
+### 2.3.1 The `is_remove` parameter (since v3.4.2)
+
+Colonization from the mainland, dispersal (among and within patches) and local germination take an optional `is_remove` argument, defaulting to `False`. With `is_remove=False` a process only *reads* from its source pool: whatever it takes stays behind, so the same `individual` object can be taken again by another process in the same time-step and end up referenced from more than one microsite, or from a pool and a microsite at once. Setting `is_remove=True` makes the process sample **without replacement** — every individual / marker it consumes is deleted from its source pool, or from its mainland microsite in the case of colonization.
+
+Because schedule `params` are dispatched as keyword arguments, the flag is switched on per process directly in the schedule:
+
+```python
+{'target': 'islands', 'method': 'meta_colonize_from_propagules_rains',
+ 'params': {'mainland_obj': '@mainland', 'propagules_rain_num': 200, 'is_remove': True}},
+```
+
+Leaving `is_remove` out everywhere reproduces the pre-v3.4.2 behaviour exactly. Note that the global-habitat-network extension's dispersal methods do not support this flag yet.
+
 ### 2.4 A minimal schedule, end to end
 
 The schedule below builds both metacommunities at `time_step=0` from CSV, primes the recorder file, runs one tick of dead-selection + asexual reproduction on the mainland, and flushes the log:

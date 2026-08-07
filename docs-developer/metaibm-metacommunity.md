@@ -538,12 +538,15 @@ Performs mixed asexual + sexual reproduction with mutation and immediate germina
 | `self` | self |
 | `mainland_obj` | a `metacommunity` object representing the mainland source |
 | `propagules_rain_num` | float; expected number of propagules per patch |
+| `is_remove` | bool, default `False`; *new in v3.4.2*. If `True`, each colonist is deleted from its mainland microsite (`habitat.del_individual()`) as it is placed into the island metacommunity |
 
 **Returns:** `str` (log_info)
 
 **Description:**
 
-Colonizes the metacommunity from a mainland source via asexual propagule rain. For each patch, probabilistically rounds the propagule count, then randomly samples occupied sites from the mainland and empty sites from the target patch. Creates deep copies of mainland individuals and places them into target microsites. Returns a log string with the colonization count.
+Colonizes the metacommunity from a mainland source via asexual propagule rain. For each patch, probabilistically rounds the propagule count, then randomly samples occupied sites from the mainland and empty sites from the target patch, and places the mainland individuals into the target microsites. Returns a log string with the colonization count.
+
+> **Note (v3.4.2):** the colonist is placed **by reference, not copied** — the island microsite and the mainland microsite hold the very same `individual` object, so with `is_remove=False` (the default) that organism lives in two places at once and ages, mutates and dies as one. Set `is_remove=True` to make the propagule actually leave the mainland. (Earlier revisions of this document described this method as creating deep copies; it never did.)
 
 ---
 
@@ -556,12 +559,13 @@ Colonizes the metacommunity from a mainland source via asexual propagule rain. F
 | `self` | self |
 | `mainland_obj` | a `metacommunity` object representing the mainland source |
 | `propagules_rain_num` | float; expected number of propagule pairs per patch |
+| `is_remove` | bool, default `False`; *new in v3.4.2*. If `True`, both the female and the male of each pair are deleted from their mainland microsites as they are placed into the island metacommunity |
 
 **Returns:** `str` (log_info)
 
 **Description:**
 
-Colonizes via sexual propagule pairs. Selects female-male pairs from mainland occupied sites and places them into paired empty sites in the target metacommunity. Counts pairs as 2 individuals. Returns a log string with the colonization count.
+Colonizes via sexual propagule pairs. Selects female-male pairs from mainland occupied sites and places them into paired empty sites in the target metacommunity. Counts pairs as 2 individuals. Returns a log string with the colonization count. As in `meta_colonize_from_propagules_rains`, both colonists are placed **by reference**, so `is_remove=True` is what actually removes them from the mainland.
 
 ---
 
@@ -909,6 +913,7 @@ Computes actual dispersal numbers as `min(emigrants, immigrants)` per element, t
 | `self` | self |
 | `total_disp_among_rate` | float; emigration fraction |
 | `method` | dispersal kernel method (default `'uniform'`) |
+| `is_remove` | bool, default `False`; *new in v3.4.2*. If `True`, migrants are drawn with `patch.sample_offspring_without_replacement(..., pool_name=('offspring_pool', 'dormancy_pool'))` and removed from the source patch's pools; if `False`, the legacy `random.sample()` over a temporary combined list is used and the migrants also stay in their source pools |
 | `**kwargs` | kernel-specific parameters |
 
 **Returns:** `str` (log_info)
@@ -928,6 +933,7 @@ Moves individuals from offspring + dormancy pools directly into empty microsites
 | `self` | self |
 | `total_disp_among_rate` | float; emigration fraction |
 | `method` | dispersal kernel method |
+| `is_remove` | bool, default `False`; *new in v3.4.2*. If `True`, migrants are drawn with `patch.sample_offspring_without_replacement()` and removed from the source patch's `offspring_pool`; if `False`, the legacy `random.sample()` is used and the migrants also stay in the source pool |
 | `**kwargs` | kernel-specific parameters |
 
 **Returns:** `str` (log_info)
@@ -947,6 +953,7 @@ Moves offspring individual objects from source patches' `offspring_pool` to dest
 | `self` | self |
 | `total_disp_among_rate` | float; emigration fraction |
 | `method` | dispersal kernel method |
+| `is_remove` | bool, default `False`; *new in v3.4.2*. If `True`, markers are drawn with `patch.sample_offspring_without_replacement(..., pool_name=('offspring_marker_pool', ))` and removed from the source patch's `offspring_marker_pool`; if `False`, the legacy `random.sample()` is used and the markers also stay in the source pool |
 | `**kwargs` | kernel-specific parameters |
 
 **Returns:** `str` (log_info)
@@ -966,6 +973,7 @@ Disperses lightweight marker tuples between patches (marker pipeline). <span sty
 | `self` | self |
 | `total_disp_among_rate` | float; emigration fraction |
 | `method` | dispersal kernel method |
+| `is_remove` | bool, default `False`; *new in v3.4.2*. If `True`, migrants are drawn with `patch.sample_offspring_without_replacement(..., pool_name=('offspring_pool', 'dormancy_pool'))` and removed from the source patch's pools; if `False`, the legacy `random.sample()` over a temporary combined list is used and the migrants also stay in their source pools |
 | `**kwargs` | kernel-specific parameters |
 
 **Returns:** `str` (log_info)
@@ -986,6 +994,7 @@ Moves individuals from combined offspring + dormancy pools to destination patche
 |-----------|-------------|
 | `self` | self |
 | `disp_within_rate` | float; fraction of offspring markers that disperse to other habitats within the same patch |
+| `is_remove` | bool, default `False`; *new in v3.4.2*. Forwarded to the patch level; if `True`, dispersed markers are removed from the source habitat's `offspring_marker_pool` |
 
 **Returns:** `str` (log_info)
 
@@ -1003,6 +1012,7 @@ Executes within-patch dispersal of offspring markers across all patches. Moves m
 |-----------|-------------|
 | `self` | self |
 | `disp_within_rate` | float; within-patch dispersal rate |
+| `is_remove` | bool, default `False`; *new in v3.4.2*. Forwarded to the patch level; if `True`, dispersed individuals are removed from the source habitat's `offspring_pool` |
 
 **Returns:** `str` (log_info)
 
@@ -1020,6 +1030,7 @@ Executes within-patch dispersal of offspring individuals across all patches. Mov
 |-----------|-------------|
 | `self` | self |
 | `disp_within_rate` | float; within-patch dispersal rate |
+| `is_remove` | bool, default `False`; *new in v3.4.2*. Forwarded to the patch level; if `True`, dispersed individuals are removed from the source habitat's `offspring_pool` / `dormancy_pool` |
 
 **Returns:** `str` (log_info)
 
@@ -1037,6 +1048,7 @@ Executes within-patch dispersal from combined offspring + dormancy pools to immi
 |-----------|-------------|
 | `self` | self |
 | `disp_within_rate` | float; within-patch dispersal rate |
+| `is_remove` | bool, default `False`; *new in v3.4.2*. Forwarded to the patch level; if `True`, dispersed individuals are removed from the source habitat's `offspring_pool` / `dormancy_pool` |
 
 **Returns:** `str` (log_info)
 
@@ -1055,6 +1067,7 @@ Executes within-patch dispersal of offspring + dormancy pool individuals directl
 | Parameter | Description |
 |-----------|-------------|
 | `self` | self |
+| `is_remove` | bool, default `False`; *new in v3.4.2*. If `True`, every germinated individual is removed from the pool it came from (`offspring_pool` or `dormancy_pool`) |
 
 **Returns:** `str` (log_info)
 
@@ -1071,6 +1084,7 @@ Places individuals from offspring + dormancy pools into empty microsites across 
 | Parameter | Description |
 |-----------|-------------|
 | `self` | self |
+| `is_remove` | bool, default `False`; *new in v3.4.2*. If `True`, every germinated individual is removed from the pool it came from (`offspring_pool` or `immigrant_pool`) |
 
 **Returns:** `str` (log_info)
 
@@ -1087,6 +1101,7 @@ Places individuals from offspring + immigrant pools into empty microsites across
 | Parameter | Description |
 |-----------|-------------|
 | `self` | self |
+| `is_remove` | bool, default `False`; *new in v3.4.2*. If `True`, every germinated individual is removed from the pool it came from (`offspring_pool`, `immigrant_pool` or `dormancy_pool`) |
 
 **Returns:** `str` (log_info)
 
@@ -1105,12 +1120,15 @@ Places individuals from all three pools (offspring, immigrant, dormancy) into em
 | `self` | self |
 | `mutation_rate` | float; per-locus mutation probability |
 | `pheno_var_ls` | list of phenotypic variance per trait |
+| `is_remove` | bool, default `False`; *new in v3.4.2*. If `True`, every realized marker is removed from the pool it came from (`offspring_marker_pool` or `immigrant_marker_pool`) |
 
 **Returns:** `str` (log_info)
 
 **Description:**
 
 Realizes births from the marker pipeline. For each habitat, combines offspring and immigrant markers, shuffles with empty sites, then for each marker reads the birth origin `(birth_patch_id, birth_hab_id, reproduce_mode)` and calls the appropriate reproduction method on the birth habitat to create the actual `individual` object. Supports modes: `'asexual'`, `'sexual'`, `'mix_asexual'`, `'mix_sexual'`. Returns a log string with the birth/germination count.
+
+Since v3.4.2 each marker is carried together with the name of its source pool, so that `is_remove=True` deletes it from the correct one. Note that markers are plain tuples, so `list.remove()` deletes the first *equal* tuple rather than a specific occurrence — this is harmless here, because identical markers denote identical birth instructions and exactly one of them is consumed per realized birth.
 
 ---
 

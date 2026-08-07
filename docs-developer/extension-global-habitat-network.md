@@ -280,6 +280,8 @@ Computes the realized number of propagules that disperse from habitat `i` to hab
 
 Executes the **object pipeline** dispersal across the global habitat network. For each destination habitat `j`, randomly samples individual objects from the `offspring_pool` of each source habitat `i` (in a different patch) according to the offspring dispersal matrix, then appends them (shuffled) to habitat `j`'s `immigrant_pool`. If the metacommunity has fewer than 2 patches, no dispersal occurs.
 
+> **Limitation (as of v3.4.2): this extension method has no `is_remove` argument.** It always uses `random.sample()` on the source `offspring_pool` without removing the picks, so a given offspring object can still be dispersed to several destination habitats and simultaneously remain in its source pool — the object-reference (aliasing) situation that `is_remove=True` removes from the core `metacommunity` dispersal methods. Use the core dispersal methods if sampling without replacement matters for your model.
+
 ---
 
 ### `dispersal_among_patches_in_global_habitat_network_from_offspring_marker_pool_to_immigrant_marker_pool`
@@ -298,6 +300,8 @@ Executes the **object pipeline** dispersal across the global habitat network. Fo
 **Description:**
 
 Executes the **marker pipeline** dispersal across the global habitat network. Same logic as the offspring-pool version, but operates on `offspring_marker_pool` and `immigrant_marker_pool`. Used when dormancy is off for more memory-efficient dispersal.
+
+> **Limitation (as of v3.4.2):** as above, this extension method has no `is_remove` argument and always samples markers without removing them from `offspring_marker_pool`.
 
 ---
 

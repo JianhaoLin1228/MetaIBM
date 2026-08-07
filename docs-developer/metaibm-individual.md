@@ -2,6 +2,8 @@
 
 Source: `metaibm/individual.py`
 
+> **ATTENTION (since v3.4.2): do NOT give `individual` an `__eq__` method.** The class must keep Python's default identity-based equality. Sampling without replacement (`is_remove=True`, see `habitat.sample_offspring_without_replacement()`) removes a picked individual from its source pool with `list.remove()`, which deletes the **first element equal to** the argument. With the default `__eq__` that is the exact object that was sampled; with a value-based `__eq__` it could be any other individual carrying the same genotype/phenotype, which would silently corrupt the pools.
+
 ---
 
 ## Attributes

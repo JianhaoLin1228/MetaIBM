@@ -270,6 +270,28 @@ Returns the combined list of all offspring and dormant `individual` objects from
 
 ---
 
+#### `sample_offspring_without_replacement`
+
+*New in v3.4.2.*
+
+**Parameters:**
+
+| Parameter | Description |
+|-----------|-------------|
+| `self` | self |
+| `num` | int; number of offspring (`individual` objects or offspring markers) to sample |
+| `pool_name` | tuple of pool attribute names to sample from; default `('offspring_pool', )`. Also used as `('offspring_pool', 'dormancy_pool')` and `('offspring_marker_pool', )` |
+
+**Returns:** `list` of sampled `individual` objects or offspring markers
+
+**Description:**
+
+Patch-level counterpart of `habitat.sample_offspring_without_replacement()`. Samples `num` items **without replacement** from the union of the listed pools **across all habitats of this patch**, and **removes each pick from the habitat and pool it actually came from**, then returns the picked objects / markers. Each candidate is tagged with its source habitat object and pool name before sampling. The sample size is capped at `min(num, pool size)`, so requesting more than the patch holds returns everything available instead of raising `ValueError`.
+
+This is the sampling primitive behind `is_remove=True` in the metacommunity-level dispersal-among-patches methods.
+
+---
+
 ### Data Extraction
 
 #### `get_patch_microsites_individals_sp_id_values`
@@ -749,6 +771,7 @@ Computes the final within-patch dispersal matrix as `min(emigrants, immigrants)`
 |-----------|-------------|
 | `self` | self |
 | `disp_within_rate` | float; dispersal rate within the patch |
+| `is_remove` | bool; *new in v3.4.2*. If `True`, migrants are drawn with `habitat.sample_offspring_without_replacement(..., pool_name=('offspring_pool', 'dormancy_pool'))` and removed from the source habitat's pools; if `False`, the legacy `random.sample()` on a temporary combined list is used and the migrants also stay in their source pools |
 
 **Returns:** `int` (counter)
 
@@ -766,6 +789,7 @@ Executes within-patch dispersal from offspring and dormancy pools directly into 
 |-----------|-------------|
 | `self` | self |
 | `disp_within_rate` | float; dispersal rate within the patch |
+| `is_remove` | bool; *new in v3.4.2*. If `True`, markers are drawn with `habitat.sample_offspring_without_replacement(..., pool_name=('offspring_marker_pool', ))` and removed from the source habitat's `offspring_marker_pool`; if `False`, the legacy `random.sample()` is used and the markers also stay in the source pool |
 
 **Returns:** `int` (counter)
 
@@ -783,6 +807,7 @@ Executes within-patch dispersal of offspring markers. Samples markers from sourc
 |-----------|-------------|
 | `self` | self |
 | `disp_within_rate` | float; dispersal rate within the patch |
+| `is_remove` | bool; *new in v3.4.2*. If `True`, migrants are drawn with `habitat.sample_offspring_without_replacement()` and removed from the source habitat's `offspring_pool`; if `False`, the legacy `random.sample()` is used and the migrants also stay in the source pool |
 
 **Returns:** `int` (counter)
 
@@ -800,6 +825,7 @@ Executes within-patch dispersal of offspring individuals from `offspring_pool` t
 |-----------|-------------|
 | `self` | self |
 | `disp_within_rate` | float; dispersal rate within the patch |
+| `is_remove` | bool; *new in v3.4.2*. If `True`, migrants are drawn with `habitat.sample_offspring_without_replacement(..., pool_name=('offspring_pool', 'dormancy_pool'))` and removed from the source habitat's pools; if `False`, the legacy `random.sample()` on a temporary combined list is used and the migrants also stay in their source pools |
 
 **Returns:** `int` (counter)
 
@@ -818,6 +844,7 @@ Executes within-patch dispersal from combined offspring and dormancy pools to ta
 | Parameter | Description |
 |-----------|-------------|
 | `self` | self |
+| `is_remove` | bool; *new in v3.4.2*. Forwarded to each habitat's germination method; if `True`, every germinated individual is removed from the pool it came from |
 
 **Returns:** `int` (counter)
 
@@ -834,6 +861,7 @@ Germinates individuals from offspring and dormancy pools into empty microsites a
 | Parameter | Description |
 |-----------|-------------|
 | `self` | self |
+| `is_remove` | bool; *new in v3.4.2*. Forwarded to each habitat's germination method; if `True`, every germinated individual is removed from the pool it came from |
 
 **Returns:** `int` (counter)
 
@@ -850,6 +878,7 @@ Germinates individuals from offspring and immigrant pools into empty microsites 
 | Parameter | Description |
 |-----------|-------------|
 | `self` | self |
+| `is_remove` | bool; *new in v3.4.2*. Forwarded to each habitat's germination method; if `True`, every germinated individual is removed from the pool it came from |
 
 **Returns:** `int` (counter)
 
