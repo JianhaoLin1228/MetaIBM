@@ -36,6 +36,7 @@ results/
 outputs/
 tmp/
 scratch/
+examples/example2_output/
 
 # AI assistant config (local only, not shared on GitHub)
 CLAUDE.md
