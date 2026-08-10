@@ -37,7 +37,8 @@ results/
 outputs/
 tmp/
 scratch/
-examples/example2_output/
+examples/example2/example2_output/
+examples/example2/example2_pyoutput/
 AtsNoTrace/
 
 # AI assistant config (local only, not shared on GitHub)
