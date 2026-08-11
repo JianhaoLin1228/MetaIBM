@@ -1,9 +1,10 @@
-# MetaIBM v3.4.2
+# MetaIBM v3.4.3
 
 ----------------------------------------------------------------------------------------------------------------
-Online tutorial notebook is now available! Just run it in your browser — no installation required: 
+Online tutorial notebooks are now available! Just run them in your browser — no installation required: 
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JianhaoLin1228/MetaIBM/v3.4.2?labpath=examples%2Fexample.ipynb)
+- Example 1 — islands / mainland eco-evolutionary tutorial: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JianhaoLin1228/MetaIBM/v3.4.3?labpath=examples%2Fexample.ipynb)
+- Example 2 — eco-evolutionary dynamics on alternative stable states (ATS): [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JianhaoLin1228/MetaIBM/v3.4.3?labpath=examples%2Fexample2%2Fexample2.ipynb)
 
 ----------------------------------------------------------------------------------------------------------------
 
@@ -19,15 +20,15 @@ MetaIBM adopts a package-oriented structure centered on the `metaibm` package an
 
 ---
 
-## Highlights in v3.4.2
+## Highlights in v3.4.3
 
-- **Fixes an object-reference (aliasing) problem** in dispersal, colonization from the mainland, and local germination. Before v3.4.2 these processes only *read* from their source pools without ever removing what they took, so the very same `individual` object (or the same offspring marker) could be taken by several processes within one time-step and end up **referenced from more than one microsite at once**, or exist in a source pool and in an occupied microsite at the same time. Because a microsite stores a *reference* rather than a copy, every such duplicate aged, mutated and died as one and the same organism.
-- **New `is_remove` switch (default `False`)** on every affected metacommunity-level process. With `is_remove=True` the process samples **without replacement**: whatever is dispersed, germinated, or shipped from the mainland is deleted from its source pool (or from its mainland microsite), so each `individual` object / offspring marker is consumed exactly once per time-step.
-- `is_remove` is available on colonization from the mainland (`meta_colonize_from_propagules_rains`, `pairwise_sexual_colonization_from_prpagules_rains`), on all four dispersal-among-patches methods, on all four dispersal-within-patch methods, and on all four local-germination methods (three object-pipeline entries + the marker-pipeline entry).
-- **New sampling helper `sample_offspring_without_replacement(num, pool_name)`** on both `habitat` and `patch`. It samples across one or several pools at once (`('offspring_pool',)`, `('offspring_pool', 'dormancy_pool')`, or `('offspring_marker_pool',)`), removes each pick from the pool it actually came from, and returns the picked objects / markers. It caps the sample size at the pool size, so on the `is_remove=True` path an over-large dispersal number returns everything available instead of raising `ValueError`; the legacy `is_remove=False` path still calls `random.sample()` directly and is unchanged in this respect.
-- **Backward compatible by default.** `is_remove=False` keeps exactly the v3.4.1 sampling behaviour, so existing model scripts and published results are unaffected unless the flag is switched on explicitly.
-- `individual` must keep Python's default identity-based equality: the class deliberately defines **no `__eq__`**, because the removal step relies on `list.remove()` deleting the one object that was actually sampled rather than the first value-equal individual in the pool. This constraint is now recorded at the top of `metaibm/individual.py`.
-- **Not yet covered:** the two dispersal methods of the global-habitat-network extension (`extension/global_habitat_network.py`) still sample with `random.sample()` without removal and take no `is_remove` argument.
+- **New tutorial `examples/example2/` — eco-evolutionary dynamics on alternative stable states (ATS)** under rapid environmental change. Documentation / example release only: the `metaibm` package is unchanged from v3.4.2.
+- **The question:** whether two species with different thermal optima produce a **hysteresis loop** — a landscape whose composition depends on the direction the climate came from, not only on the climate itself — and how mutation, reproduction mode, disturbance, propagule supply and environmental heterogeneity move its edges. Framed by Scheffer et al. (2001) (fold bifurcation, hysteresis) and Dakos et al. (2019) (standing variation can flatten the fold; adaptation can delay or advance a shift).
+- **The model:** two frozen mainland source pools (sp1 cold-adapted at 0.2, sp2 warm-adapted at 0.8, each burned in for 100 steps) rain propagules into 100 patches on a 10 × 10 grid, coupled by weak dispersal and thinned by patch disturbance. The environment steps by ±0.1 every 100 steps between step 99 and step 700 of 800, so the same climate can be walked up (warming) and down (cooling).
+- **The design:** 3 × 3 × 2 = 18 runs — `(reproduce_mode, mutation_rate)` pairs × `patch_dist_rate` × climate direction.
+- **The results:** trait lag behind the moving optimum (§3.1), the hysteresis loop and its tipping points from warming vs cooling runs at the same environment (§3.2), and two ways the loop disappears — heavy propagule rain and a patchy environment (§3.3).
+- **Files:** `example2.ipynb` (annotated end-to-end notebook, runs the grid with `multiprocessing`), `ats.py` (the same model without any plotting; `main()` is one parameter combination, same shape as `experiments/model.py`), `mpi_running.py` (MPI launcher for the 18-run grid), `tmp_nb_code2.py` (notebook helpers for loading recorded tables and drawing the figures), `bootstrap_metaibm.py`.
+- **Batch run:** `cd examples/example2 && mpiexec -np 18 python mpi_running.py` — one run per rank, jobs allocated longest-processing-time-first; each run writes `species_distribution_over_time.csv.gz`, `phenotype_distribution_over_time.csv.gz` and `logger.log` into a folder that encodes its own parameters.
 
 ---
 
@@ -110,7 +111,14 @@ MetaIBM/
 │   └── metacommunity_N=*_is_same_heterogeneity=*.csv
 ├── examples/
 │   ├── bootstrap_metaibm.py
-│   └── example.ipynb
+│   ├── example.ipynb
+│   ├── tmp_nb_code.py
+│   └── example2/
+│       ├── bootstrap_metaibm.py
+│       ├── example2.ipynb
+│       ├── tmp_nb_code2.py
+│       ├── ats.py
+│       └── mpi_running.py
 ├── test/
 │   ├── bootstrap_metaibm.py
 │   ├── test_simulator_user_freedom_and_contracts.py
@@ -165,10 +173,13 @@ Entry point for general and rookie users: schedule-and-CSV driven models that go
 
 #### `examples/`
 
-Tutorial material, runnable in the browser through the Binder badge at the top of this README.
+Tutorial material, runnable in the browser through the Binder badges at the top of this README.
 
 - `example.ipynb` — annotated end-to-end notebook: builds the mainland and the islands, runs a 100 time-step mainland burn-in to generate standing genetic variation, then runs the metacommunity loop (colonization → selection → reproduction → dispersal → germination → clear-up) and plots the results.
-- `bootstrap_metaibm.py` — ensures the project root is on `sys.path`.
+- `example2/example2.ipynb` — second tutorial: eco-evolutionary dynamics on **alternative stable states** under rapid environmental change (two thermal specialists, 100 patches, the same climate walked up and down, a 3 × 3 × 2 design).
+- `example2/ats.py` — the model of example2 with no plotting; `main()` runs one parameter combination. `example2/mpi_running.py` — MPI launcher for the whole grid.
+- `tmp_nb_code.py`, `example2/tmp_nb_code2.py` — notebook helper modules (tables, figures, loading recorded output).
+- `bootstrap_metaibm.py` (one copy per notebook directory) — ensures the project root is on `sys.path`.
 
 #### `test/`
 
